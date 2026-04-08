@@ -1,0 +1,2911 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>FRAGASM — Luxury Fragrances</title>
+<link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,300;0,400;0,600;1,300;1,400&family=Montserrat:wght@300;400;500;600&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --gold: #c9a84c;
+    --gold-light: #e8cc7a;
+    --gold-dim: #8a6f2e;
+    --black: #080808;
+    --dark: #0f0e0d;
+    --dark2: #1a1816;
+    --dark3: #242220;
+    --cream: #f5f0e8;
+    --cream2: #ede6d6;
+    --white: #ffffff;
+    --text-muted: #8a8278;
+    --border: rgba(201,168,76,0.2);
+  }
+
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+
+  html { scroll-behavior: smooth; }
+
+  body {
+    background: var(--black);
+    color: var(--cream);
+    font-family: 'Montserrat', sans-serif;
+    font-weight: 300;
+    overflow-x: hidden;
+    cursor: default;
+  }
+
+  /* ─── SCROLLBAR ─── */
+  ::-webkit-scrollbar { width: 4px; }
+  ::-webkit-scrollbar-track { background: var(--dark); }
+  ::-webkit-scrollbar-thumb { background: var(--gold-dim); border-radius: 2px; }
+
+  /* ─── NAV ─── */
+  nav {
+    position: fixed; top: 0; left: 0; right: 0; z-index: 1000;
+    display: flex; align-items: center; justify-content: space-between;
+    padding: 20px 60px;
+    background: linear-gradient(to bottom, rgba(8,8,8,0.98) 0%, rgba(8,8,8,0) 100%);
+    backdrop-filter: blur(2px);
+    transition: background 0.4s;
+  }
+  nav.scrolled {
+    background: rgba(8,8,8,0.97);
+    border-bottom: 1px solid var(--border);
+  }
+
+  .logo {
+    font-family: 'Cormorant Garamond', serif;
+    font-size: 2rem;
+    font-weight: 300;
+    letter-spacing: 0.35em;
+    color: var(--gold);
+    text-decoration: none;
+    text-transform: uppercase;
+  }
+  .logo span { color: var(--cream); }
+
+  .nav-links {
+    display: flex; gap: 40px; list-style: none;
+  }
+  .nav-links a {
+    text-decoration: none; color: var(--cream2);
+    font-size: 0.68rem; letter-spacing: 0.2em; text-transform: uppercase;
+    transition: color 0.3s;
+    position: relative;
+  }
+  .nav-links a::after {
+    content: ''; position: absolute; bottom: -4px; left: 0;
+    width: 0; height: 1px; background: var(--gold);
+    transition: width 0.3s;
+  }
+  .nav-links a:hover { color: var(--gold); }
+  .nav-links a:hover::after { width: 100%; }
+
+  .nav-right {
+    display: flex; align-items: center; gap: 24px;
+  }
+
+  .search-btn, .cart-btn {
+    background: none; border: none; cursor: pointer;
+    color: var(--cream2); transition: color 0.3s;
+    font-size: 1.1rem; padding: 4px;
+  }
+  .search-btn:hover, .cart-btn:hover { color: var(--gold); }
+
+  .cart-btn {
+    position: relative;
+    display: flex; align-items: center; gap: 8px;
+    font-family: 'Montserrat', sans-serif;
+    font-size: 0.68rem; letter-spacing: 0.15em; text-transform: uppercase;
+    color: var(--cream2);
+  }
+  #cart-count {
+    background: var(--gold); color: var(--black);
+    border-radius: 50%; width: 18px; height: 18px;
+    font-size: 0.6rem; display: flex; align-items: center; justify-content: center;
+    font-weight: 600;
+    transition: transform 0.3s;
+  }
+  #cart-count.bump { animation: bump 0.3s ease; }
+  @keyframes bump {
+    0% { transform: scale(1); }
+    50% { transform: scale(1.5); }
+    100% { transform: scale(1); }
+  }
+
+  /* ─── HERO ─── */
+  .hero {
+    height: 100vh; position: relative;
+    display: flex; align-items: center; justify-content: center;
+    overflow: hidden;
+  }
+
+  .hero-bg {
+    position: absolute; inset: 0;
+    background: 
+      radial-gradient(ellipse 80% 60% at 60% 40%, rgba(201,168,76,0.08) 0%, transparent 60%),
+      radial-gradient(ellipse 40% 40% at 20% 80%, rgba(201,168,76,0.05) 0%, transparent 50%),
+      linear-gradient(160deg, #0f0e0d 0%, #080808 50%, #0d0b09 100%);
+  }
+
+  .hero-noise {
+    position: absolute; inset: 0; opacity: 0.03;
+    background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 256 256' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noise'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noise)'/%3E%3C/svg%3E");
+    background-size: 200px 200px;
+  }
+
+  .hero-lines {
+    position: absolute; inset: 0; overflow: hidden;
+  }
+  .hero-line {
+    position: absolute; left: 0; right: 0;
+    height: 1px; background: linear-gradient(to right, transparent, rgba(201,168,76,0.15), transparent);
+  }
+  .hero-line:nth-child(1) { top: 25%; }
+  .hero-line:nth-child(2) { top: 75%; }
+
+  .hero-vert {
+    position: absolute; top: 0; bottom: 0;
+    width: 1px; background: linear-gradient(to bottom, transparent, rgba(201,168,76,0.12), transparent);
+  }
+  .hero-vert:nth-child(3) { left: 15%; }
+  .hero-vert:nth-child(4) { right: 15%; }
+
+  .hero-content {
+    position: relative; z-index: 2;
+    text-align: center; padding: 0 20px;
+    animation: heroIn 1.4s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+    opacity: 0; transform: translateY(30px);
+  }
+  @keyframes heroIn {
+    to { opacity: 1; transform: translateY(0); }
+  }
+
+  .hero-eyebrow {
+    font-size: 0.65rem; letter-spacing: 0.45em; text-transform: uppercase;
+    color: var(--gold); margin-bottom: 28px;
+    display: flex; align-items: center; justify-content: center; gap: 16px;
+  }
+  .hero-eyebrow::before, .hero-eyebrow::after {
+    content: ''; display: block; width: 40px; height: 1px; background: var(--gold-dim);
+  }
+
+  .hero-title {
+    font-family: 'Cormorant Garamond', serif;
+    font-size: clamp(4rem, 10vw, 9rem);
+    font-weight: 300; line-height: 0.9;
+    letter-spacing: 0.08em;
+    color: var(--cream);
+    margin-bottom: 10px;
+  }
+  .hero-title em {
+    font-style: italic; color: var(--gold);
+    display: block;
+  }
+
+  .hero-sub {
+    font-size: 0.72rem; letter-spacing: 0.3em; text-transform: uppercase;
+    color: var(--text-muted); margin: 28px auto 48px;
+    max-width: 380px; line-height: 2;
+  }
+
+  .hero-cta {
+    display: inline-flex; align-items: center; gap: 14px;
+    padding: 14px 40px; border: 1px solid var(--gold);
+    background: transparent; color: var(--gold);
+    font-family: 'Montserrat', sans-serif;
+    font-size: 0.65rem; letter-spacing: 0.35em; text-transform: uppercase;
+    text-decoration: none; cursor: pointer;
+    transition: all 0.4s;
+    position: relative; overflow: hidden;
+  }
+  .hero-cta::before {
+    content: ''; position: absolute; inset: 0;
+    background: var(--gold); transform: translateX(-100%);
+    transition: transform 0.4s cubic-bezier(0.16, 1, 0.3, 1);
+  }
+  .hero-cta:hover::before { transform: translateX(0); }
+  .hero-cta:hover { color: var(--black); }
+  .hero-cta span { position: relative; z-index: 1; }
+
+  .hero-scroll {
+    position: absolute; bottom: 40px; left: 50%;
+    transform: translateX(-50%);
+    display: flex; flex-direction: column; align-items: center; gap: 10px;
+    color: var(--text-muted); font-size: 0.58rem; letter-spacing: 0.3em; text-transform: uppercase;
+    animation: fadeIn 2s 1.5s forwards; opacity: 0;
+  }
+  .hero-scroll-line {
+    width: 1px; height: 50px;
+    background: linear-gradient(to bottom, var(--gold-dim), transparent);
+    animation: scrollLine 2s 1.5s infinite;
+  }
+  @keyframes scrollLine {
+    0% { transform: scaleY(0); transform-origin: top; }
+    50% { transform: scaleY(1); transform-origin: top; }
+    51% { transform: scaleY(1); transform-origin: bottom; }
+    100% { transform: scaleY(0); transform-origin: bottom; }
+  }
+  @keyframes fadeIn { to { opacity: 1; } }
+
+  /* ─── SECTION HEADERS ─── */
+  .section-header {
+    text-align: center; margin-bottom: 70px;
+  }
+  .section-eyebrow {
+    font-size: 0.6rem; letter-spacing: 0.45em; text-transform: uppercase;
+    color: var(--gold); margin-bottom: 16px;
+    display: flex; align-items: center; justify-content: center; gap: 16px;
+  }
+  .section-eyebrow::before, .section-eyebrow::after {
+    content: ''; display: block; width: 30px; height: 1px; background: var(--gold-dim);
+  }
+  .section-title {
+    font-family: 'Cormorant Garamond', serif;
+    font-size: clamp(2.5rem, 5vw, 4rem);
+    font-weight: 300; letter-spacing: 0.04em;
+    color: var(--cream);
+    line-height: 1.1;
+  }
+  .section-title em { font-style: italic; color: var(--gold); }
+
+  /* ─── MARQUEE ─── */
+  .marquee-wrap {
+    overflow: hidden; border-top: 1px solid var(--border);
+    border-bottom: 1px solid var(--border);
+    padding: 16px 0; margin: 0; background: var(--dark);
+  }
+  .marquee-track {
+    display: flex; white-space: nowrap;
+    animation: marquee 25s linear infinite;
+  }
+  .marquee-track span {
+    font-family: 'Cormorant Garamond', serif;
+    font-size: 0.75rem; letter-spacing: 0.4em; text-transform: uppercase;
+    color: var(--text-muted); padding: 0 40px;
+  }
+  .marquee-track span.dot { color: var(--gold); font-size: 0.5rem; padding: 0; }
+  @keyframes marquee { from { transform: translateX(0); } to { transform: translateX(-50%); } }
+
+  /* ─── BRAND SECTIONS ─── */
+  section.brand-section {
+    padding: 100px 60px;
+    position: relative;
+    border-bottom: 1px solid var(--border);
+  }
+  section.brand-section:nth-child(even) { background: var(--dark); }
+  section.brand-section:nth-child(odd) { background: var(--black); }
+
+  .brand-header {
+    display: flex; align-items: flex-end; justify-content: space-between;
+    margin-bottom: 60px; padding-bottom: 30px;
+    border-bottom: 1px solid var(--border);
+    flex-wrap: wrap; gap: 20px;
+  }
+
+  .brand-name {
+    font-family: 'Cormorant Garamond', serif;
+    font-size: clamp(2.8rem, 6vw, 5rem);
+    font-weight: 300; letter-spacing: 0.06em;
+    color: var(--cream); line-height: 1;
+  }
+  .brand-name span { color: var(--gold); }
+
+  .brand-tagline {
+    font-size: 0.62rem; letter-spacing: 0.25em; text-transform: uppercase;
+    color: var(--text-muted); max-width: 280px; text-align: right;
+    line-height: 1.8;
+  }
+
+  /* ─── PRODUCT GRID ─── */
+  .product-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(260px, 1fr));
+    gap: 28px;
+  }
+
+  .product-card {
+    background: var(--dark2);
+    border: 1px solid var(--border);
+    position: relative; overflow: hidden;
+    transition: transform 0.4s cubic-bezier(0.16, 1, 0.3, 1),
+                border-color 0.3s, box-shadow 0.4s;
+    cursor: pointer;
+    group: true;
+  }
+  .product-card:hover {
+    transform: translateY(-6px);
+    border-color: rgba(201,168,76,0.45);
+    box-shadow: 0 20px 60px rgba(0,0,0,0.5), 0 0 30px rgba(201,168,76,0.06);
+  }
+
+  .product-img-wrap {
+    aspect-ratio: 3/4; overflow: hidden;
+    background: var(--dark3);
+    position: relative;
+    display: flex; align-items: center; justify-content: center;
+  }
+
+  .product-img-placeholder {
+    width: 100%; height: 100%;
+    display: flex; align-items: center; justify-content: center;
+    flex-direction: column; gap: 12px;
+    background: linear-gradient(135deg, var(--dark3) 0%, #1e1b17 100%);
+    position: relative; overflow: hidden;
+  }
+  .product-img-placeholder::before {
+    content: ''; position: absolute; inset: 0;
+    background: radial-gradient(ellipse 60% 60% at 50% 40%, rgba(201,168,76,0.07) 0%, transparent 70%);
+  }
+
+  .product-real-img {
+    width: 100%; height: 100%;
+    object-fit: cover;
+    object-position: center;
+    position: absolute; inset: 0;
+    transition: transform 0.5s cubic-bezier(0.16, 1, 0.3, 1), opacity 0.3s;
+    opacity: 0;
+  }
+  .product-img-placeholder.img-loaded .product-real-img {
+    opacity: 1;
+  }
+  .product-card:hover .product-real-img {
+    transform: scale(1.06);
+  }
+
+  .bottle-icon {
+    font-size: 4rem; opacity: 0.35;
+    transition: transform 0.4s, opacity 0.4s;
+  }
+  .product-card:hover .bottle-icon { transform: scale(1.1); opacity: 0.5; }
+
+  .product-brand-badge {
+    position: absolute; top: 14px; left: 14px;
+    font-size: 0.5rem; letter-spacing: 0.3em; text-transform: uppercase;
+    color: var(--gold); background: rgba(8,8,8,0.8);
+    padding: 4px 10px; border: 1px solid var(--border);
+  }
+
+ 
+
+  .product-info {
+    padding: 20px 20px 22px;
+  }
+
+  .product-name {
+    font-family: 'Cormorant Garamond', serif;
+    font-size: 1.3rem; font-weight: 400;
+    color: var(--cream); margin-bottom: 5px;
+    letter-spacing: 0.02em; line-height: 1.3;
+  }
+
+  .product-type {
+    font-size: 0.58rem; letter-spacing: 0.25em; text-transform: uppercase;
+    color: var(--text-muted); margin-bottom: 14px;
+  }
+
+  .product-footer {
+    display: flex; align-items: center; justify-content: space-between;
+  }
+
+  .product-price {
+    font-family: 'Cormorant Garamond', serif;
+    font-size: 1.4rem; color: var(--gold); font-weight: 300;
+  }
+
+  .add-cart-btn {
+    background: none; border: 1px solid var(--border);
+    color: var(--cream2); cursor: pointer; padding: 8px 16px;
+    font-family: 'Montserrat', sans-serif;
+    font-size: 0.58rem; letter-spacing: 0.2em; text-transform: uppercase;
+    transition: all 0.3s;
+    white-space: nowrap;
+  }
+  .add-cart-btn:hover {
+    background: var(--gold); border-color: var(--gold);
+    color: var(--black);
+  }
+  .add-cart-btn.added {
+    background: var(--gold); border-color: var(--gold); color: var(--black);
+  }
+
+  /* ─── SIZE SELECTOR ─── */
+  .size-selector {
+    display: flex; gap: 6px; margin-bottom: 14px;
+  }
+  .size-opt {
+    font-size: 0.55rem; letter-spacing: 0.1em; text-transform: uppercase;
+    padding: 4px 8px; border: 1px solid var(--border);
+    color: var(--text-muted); cursor: pointer; transition: all 0.2s;
+  }
+  .size-opt:hover, .size-opt.active {
+    border-color: var(--gold); color: var(--gold);
+  }
+
+  /* ─── CART SIDEBAR ─── */
+  .cart-overlay {
+    position: fixed; inset: 0; z-index: 1999;
+    background: rgba(0,0,0,0.7); backdrop-filter: blur(4px);
+    opacity: 0; pointer-events: none; transition: opacity 0.4s;
+  }
+  .cart-overlay.open { opacity: 1; pointer-events: all; }
+
+  .cart-sidebar {
+    position: fixed; top: 0; right: 0; bottom: 0;
+    width: min(440px, 100vw); z-index: 2000;
+    background: var(--dark);
+    border-left: 1px solid var(--border);
+    transform: translateX(100%); transition: transform 0.5s cubic-bezier(0.16, 1, 0.3, 1);
+    display: flex; flex-direction: column;
+  }
+  .cart-sidebar.open { transform: translateX(0); }
+
+  .cart-head {
+    padding: 30px 30px 24px;
+    border-bottom: 1px solid var(--border);
+    display: flex; align-items: center; justify-content: space-between;
+  }
+  .cart-head-title {
+    font-family: 'Cormorant Garamond', serif;
+    font-size: 1.8rem; font-weight: 300; letter-spacing: 0.06em;
+    color: var(--cream);
+  }
+  .cart-close {
+    background: none; border: 1px solid var(--border);
+    color: var(--cream2); cursor: pointer;
+    width: 38px; height: 38px; font-size: 1.1rem;
+    display: flex; align-items: center; justify-content: center;
+    transition: all 0.3s;
+  }
+  .cart-close:hover { background: var(--gold); border-color: var(--gold); color: var(--black); }
+
+  .cart-body {
+    flex: 1; overflow-y: auto; padding: 24px 30px;
+  }
+  .cart-empty {
+    text-align: center; padding: 60px 20px;
+    color: var(--text-muted);
+  }
+  .cart-empty-icon { font-size: 3rem; opacity: 0.3; margin-bottom: 16px; }
+  .cart-empty-text {
+    font-family: 'Cormorant Garamond', serif;
+    font-size: 1.3rem; font-weight: 300;
+    margin-bottom: 8px;
+  }
+  .cart-empty-sub { font-size: 0.65rem; letter-spacing: 0.15em; text-transform: uppercase; }
+
+  .cart-item {
+    display: flex; gap: 16px; padding: 18px 0;
+    border-bottom: 1px solid var(--border);
+    animation: slideIn 0.3s ease forwards;
+  }
+  @keyframes slideIn { from { opacity: 0; transform: translateX(20px); } to { opacity: 1; transform: translateX(0); } }
+
+  .cart-item-img {
+    width: 70px; height: 85px; flex-shrink: 0;
+    background: var(--dark3);
+    display: flex; align-items: center; justify-content: center;
+    font-size: 1.8rem; opacity: 0.6;
+    border: 1px solid var(--border);
+  }
+  .cart-item-info { flex: 1; }
+  .cart-item-brand {
+    font-size: 0.55rem; letter-spacing: 0.25em; text-transform: uppercase;
+    color: var(--gold); margin-bottom: 4px;
+  }
+  .cart-item-name {
+    font-family: 'Cormorant Garamond', serif;
+    font-size: 1.05rem; color: var(--cream); margin-bottom: 4px;
+  }
+  .cart-item-size { font-size: 0.58rem; color: var(--text-muted); margin-bottom: 10px; }
+  .cart-item-row {
+    display: flex; align-items: center; gap: 10px;
+  }
+  .qty-btn {
+    background: none; border: 1px solid var(--border);
+    color: var(--cream2); width: 26px; height: 26px;
+    cursor: pointer; font-size: 0.9rem;
+    display: flex; align-items: center; justify-content: center;
+    transition: all 0.2s;
+  }
+  .qty-btn:hover { border-color: var(--gold); color: var(--gold); }
+  .qty-val { font-size: 0.8rem; color: var(--cream); min-width: 20px; text-align: center; }
+  .cart-item-price {
+    font-family: 'Cormorant Garamond', serif;
+    font-size: 1.1rem; color: var(--gold); margin-left: auto;
+  }
+  .remove-btn {
+    background: none; border: none; cursor: pointer;
+    color: var(--text-muted); font-size: 0.7rem;
+    transition: color 0.2s; margin-left: 8px;
+    letter-spacing: 0.1em;
+  }
+  .remove-btn:hover { color: #c0392b; }
+
+  .cart-foot {
+    padding: 24px 30px; border-top: 1px solid var(--border);
+  }
+  .cart-subtotal {
+    display: flex; justify-content: space-between; align-items: center;
+    margin-bottom: 8px;
+  }
+  .cart-subtotal-label { font-size: 0.62rem; letter-spacing: 0.2em; text-transform: uppercase; color: var(--text-muted); }
+  .cart-subtotal-val {
+    font-family: 'Cormorant Garamond', serif;
+    font-size: 1.6rem; color: var(--gold);
+  }
+  .cart-note { font-size: 0.55rem; letter-spacing: 0.1em; color: var(--text-muted); margin-bottom: 20px; text-transform: uppercase; }
+  .checkout-btn {
+    width: 100%; padding: 16px;
+    background: var(--gold); border: none; cursor: pointer;
+    color: var(--black); font-family: 'Montserrat', sans-serif;
+    font-size: 0.65rem; letter-spacing: 0.35em; text-transform: uppercase;
+    font-weight: 600; transition: background 0.3s;
+  }
+  .checkout-btn:hover { background: var(--gold-light); }
+  .continue-btn {
+    width: 100%; padding: 13px;
+    background: none; border: 1px solid var(--border); cursor: pointer;
+    color: var(--cream2); font-family: 'Montserrat', sans-serif;
+    font-size: 0.62rem; letter-spacing: 0.3em; text-transform: uppercase;
+    margin-top: 10px; transition: all 0.3s;
+  }
+  .continue-btn:hover { border-color: var(--gold); color: var(--gold); }
+
+  /* ─── CHECKOUT MODAL ─── */
+  .checkout-overlay {
+    position: fixed; inset: 0; z-index: 3000;
+    background: rgba(0,0,0,0.85); backdrop-filter: blur(8px);
+    display: flex; align-items: center; justify-content: center;
+    opacity: 0; pointer-events: none; transition: opacity 0.4s;
+    padding: 20px;
+  }
+  .checkout-overlay.open { opacity: 1; pointer-events: all; }
+
+  .checkout-modal {
+    background: var(--dark);
+    border: 1px solid var(--border);
+    width: 100%; max-width: 540px;
+    max-height: 90vh; overflow-y: auto;
+    transform: scale(0.95) translateY(20px);
+    transition: transform 0.4s cubic-bezier(0.16, 1, 0.3, 1);
+  }
+  .checkout-overlay.open .checkout-modal { transform: scale(1) translateY(0); }
+
+  .checkout-head {
+    padding: 32px 36px 24px;
+    border-bottom: 1px solid var(--border);
+    display: flex; align-items: center; justify-content: space-between;
+  }
+  .checkout-title {
+    font-family: 'Cormorant Garamond', serif;
+    font-size: 2rem; font-weight: 300;
+    color: var(--cream);
+  }
+  .checkout-close {
+    background: none; border: 1px solid var(--border);
+    color: var(--cream2); cursor: pointer;
+    width: 36px; height: 36px; font-size: 1rem;
+    display: flex; align-items: center; justify-content: center;
+    transition: all 0.3s; flex-shrink: 0;
+  }
+  .checkout-close:hover { background: var(--gold); border-color: var(--gold); color: var(--black); }
+
+  .checkout-body { padding: 32px 36px; }
+
+  .form-group { margin-bottom: 20px; }
+  .form-row { display: grid; grid-template-columns: 1fr 1fr; gap: 16px; }
+  .form-label {
+    display: block; font-size: 0.58rem; letter-spacing: 0.25em;
+    text-transform: uppercase; color: var(--gold); margin-bottom: 8px;
+  }
+  .form-input {
+    width: 100%; background: var(--dark2);
+    border: 1px solid var(--border); color: var(--cream);
+    padding: 12px 14px; font-family: 'Montserrat', sans-serif;
+    font-size: 0.8rem; outline: none;
+    transition: border-color 0.3s;
+  }
+  .form-input:focus { border-color: var(--gold); }
+  .form-input::placeholder { color: var(--text-muted); }
+
+  .form-section-title {
+    font-family: 'Cormorant Garamond', serif;
+    font-size: 1.2rem; color: var(--cream);
+    margin: 28px 0 18px; letter-spacing: 0.04em;
+  }
+
+  .checkout-summary {
+    background: var(--dark3); padding: 20px;
+    margin-bottom: 24px; border: 1px solid var(--border);
+  }
+  .checkout-summary-row {
+    display: flex; justify-content: space-between; align-items: center;
+    padding: 6px 0; font-size: 0.75rem; color: var(--cream2);
+  }
+  .checkout-summary-row.total {
+    border-top: 1px solid var(--border); margin-top: 8px; padding-top: 14px;
+    font-family: 'Cormorant Garamond', serif; font-size: 1.3rem; color: var(--gold);
+  }
+
+  .place-order-btn {
+    width: 100%; padding: 18px;
+    background: var(--gold); border: none; cursor: pointer;
+    color: var(--black); font-family: 'Montserrat', sans-serif;
+    font-size: 0.65rem; letter-spacing: 0.35em; text-transform: uppercase;
+    font-weight: 600; transition: background 0.3s;
+  }
+  .place-order-btn:hover { background: var(--gold-light); }
+
+  /* ─── SUCCESS STATE ─── */
+  .order-success {
+    text-align: center; padding: 60px 36px;
+    display: none;
+  }
+  .order-success.show { display: block; }
+  .success-icon { font-size: 3.5rem; margin-bottom: 20px; }
+  .success-title {
+    font-family: 'Cormorant Garamond', serif;
+    font-size: 2.5rem; color: var(--gold); font-weight: 300;
+    margin-bottom: 12px;
+  }
+  .success-sub { font-size: 0.7rem; letter-spacing: 0.15em; color: var(--text-muted); text-transform: uppercase; }
+
+  /* ─── BRAND NAV ─── */
+  .brand-nav {
+    position: sticky; top: 70px; z-index: 100;
+    background: rgba(8,8,8,0.97); border-bottom: 1px solid var(--border);
+    overflow-x: auto; white-space: nowrap;
+    padding: 0 40px;
+  }
+  .brand-nav::-webkit-scrollbar { height: 2px; }
+  .brand-nav-list {
+    display: inline-flex; gap: 0; list-style: none;
+  }
+  .brand-nav-list a {
+    display: block; padding: 16px 24px;
+    font-size: 0.62rem; letter-spacing: 0.25em; text-transform: uppercase;
+    color: var(--text-muted); text-decoration: none;
+    transition: color 0.3s; border-right: 1px solid var(--border);
+    white-space: nowrap;
+  }
+  .brand-nav-list a:first-child { border-left: 1px solid var(--border); }
+  .brand-nav-list a:hover { color: var(--gold); background: rgba(201,168,76,0.04); }
+
+  /* ─── FOOTER ─── */
+  footer {
+    background: var(--dark); border-top: 1px solid var(--border);
+    padding: 70px 60px 40px;
+  }
+  .footer-top {
+    display: grid; grid-template-columns: 2fr 1fr 1fr 1fr;
+    gap: 50px; margin-bottom: 60px;
+  }
+  .footer-brand {
+    font-family: 'Cormorant Garamond', serif;
+    font-size: 2.2rem; font-weight: 300; letter-spacing: 0.3em;
+    color: var(--gold); text-transform: uppercase; margin-bottom: 16px;
+  }
+  .footer-desc {
+    font-size: 0.7rem; color: var(--text-muted); line-height: 2;
+    max-width: 280px;
+  }
+  .footer-col-title {
+    font-size: 0.6rem; letter-spacing: 0.35em; text-transform: uppercase;
+    color: var(--gold); margin-bottom: 20px;
+  }
+  .footer-col ul { list-style: none; }
+  .footer-col ul li {
+    margin-bottom: 12px;
+  }
+  .footer-col ul li a {
+    font-size: 0.7rem; color: var(--text-muted); text-decoration: none;
+    letter-spacing: 0.08em; transition: color 0.3s;
+  }
+  .footer-col ul li a:hover { color: var(--cream2); }
+  .footer-bottom {
+    border-top: 1px solid var(--border); padding-top: 30px;
+    display: flex; justify-content: space-between; align-items: center;
+    flex-wrap: wrap; gap: 12px;
+  }
+  .footer-copy { font-size: 0.6rem; color: var(--text-muted); letter-spacing: 0.12em; }
+
+  /* ─── TOAST ─── */
+  .toast {
+    position: fixed; bottom: 30px; left: 50%; transform: translateX(-50%) translateY(20px);
+    background: var(--dark2); border: 1px solid var(--gold);
+    color: var(--cream); padding: 12px 24px;
+    font-size: 0.65rem; letter-spacing: 0.2em; text-transform: uppercase;
+    z-index: 9999; opacity: 0; transition: all 0.3s; white-space: nowrap;
+    display: flex; align-items: center; gap: 10px;
+  }
+  .toast.show { opacity: 1; transform: translateX(-50%) translateY(0); }
+  .toast-dot { width: 6px; height: 6px; border-radius: 50%; background: var(--gold); }
+
+  /* ─── BRAND DECORATION ─── */
+  .brand-deco {
+    position: absolute; right: 60px; top: 50%;
+    transform: translateY(-50%);
+    font-family: 'Cormorant Garamond', serif;
+    font-size: clamp(5rem, 12vw, 14rem);
+    font-weight: 300; color: rgba(201,168,76,0.04);
+    letter-spacing: 0.06em; text-transform: uppercase;
+    pointer-events: none; user-select: none; line-height: 1;
+    white-space: nowrap; overflow: hidden;
+    max-width: 50%; text-align: right;
+  }
+
+  @media (max-width: 900px) {
+    nav { padding: 16px 24px; }
+    .nav-links { display: none; }
+    section.brand-section { padding: 70px 24px; }
+    footer { padding: 50px 24px 30px; }
+    .footer-top { grid-template-columns: 1fr 1fr; gap: 30px; }
+    .brand-deco { display: none; }
+    .brand-header { flex-direction: column; align-items: flex-start; }
+    .brand-tagline { text-align: left; }
+    .brand-nav { padding: 0 20px; }
+    .checkout-body { padding: 24px 24px; }
+    .checkout-head { padding: 24px 24px 20px; }
+    .form-row { grid-template-columns: 1fr; }
+    .profile-field-grid { grid-template-columns: 1fr; }
+    .social-login { grid-template-columns: 1fr; }
+    .login-body { padding: 24px 24px 28px; }
+    .login-head { padding: 28px 24px 20px; }
+    .profile-body { padding: 24px 20px; }
+    .profile-panel-head { padding: 20px 20px 16px; }
+    .profile-avatar-section { flex-direction: column; text-align: center; }
+  }
+
+  /* ─── AUTH BUTTON IN NAV ─── */
+  .auth-btn {
+    background: none; border: 1px solid var(--border);
+    color: var(--cream2); cursor: pointer; padding: 8px 18px;
+    font-family: 'Montserrat', sans-serif;
+    font-size: 0.62rem; letter-spacing: 0.2em; text-transform: uppercase;
+    transition: all 0.3s; display: flex; align-items: center; gap: 8px;
+  }
+  .auth-btn:hover { border-color: var(--gold); color: var(--gold); }
+
+  .user-menu-wrap { position: relative; }
+  .user-avatar-btn {
+    background: var(--gold); border: none; cursor: pointer;
+    width: 36px; height: 36px; border-radius: 50%;
+    display: flex; align-items: center; justify-content: center;
+    font-family: 'Cormorant Garamond', serif;
+    font-size: 1rem; font-weight: 600; color: var(--black);
+    transition: transform 0.2s, box-shadow 0.2s;
+  }
+  .user-avatar-btn:hover { transform: scale(1.1); box-shadow: 0 0 0 3px rgba(201,168,76,0.3); }
+
+  .user-dropdown {
+    position: absolute; top: calc(100% + 12px); right: 0;
+    background: var(--dark2); border: 1px solid var(--border);
+    min-width: 200px; z-index: 2000;
+    opacity: 0; pointer-events: none;
+    transform: translateY(-8px);
+    transition: all 0.25s cubic-bezier(0.16,1,0.3,1);
+  }
+  .user-dropdown.open { opacity: 1; pointer-events: all; transform: translateY(0); }
+
+  .dropdown-header {
+    padding: 16px 18px; border-bottom: 1px solid var(--border);
+  }
+  .dropdown-name {
+    font-family: 'Cormorant Garamond', serif;
+    font-size: 1.1rem; color: var(--cream); margin-bottom: 2px;
+  }
+  .dropdown-email { font-size: 0.6rem; color: var(--text-muted); letter-spacing: 0.1em; }
+
+  .dropdown-item {
+    display: flex; align-items: center; gap: 12px;
+    padding: 12px 18px; cursor: pointer;
+    font-size: 0.65rem; letter-spacing: 0.15em; text-transform: uppercase;
+    color: var(--cream2); transition: all 0.2s; border: none;
+    background: none; width: 100%; text-align: left;
+  }
+  .dropdown-item:hover { background: rgba(201,168,76,0.07); color: var(--gold); }
+  .dropdown-item svg { opacity: 0.6; flex-shrink: 0; }
+  .dropdown-item:hover svg { opacity: 1; }
+  .dropdown-divider { height: 1px; background: var(--border); margin: 4px 0; }
+  .dropdown-item.danger:hover { color: #e74c3c; background: rgba(231,76,60,0.07); }
+
+  /* ─── LOGIN OVERLAY ─── */
+  .login-overlay {
+    position: fixed; inset: 0; z-index: 4000;
+    background: rgba(0,0,0,0.92); backdrop-filter: blur(10px);
+    display: flex; align-items: center; justify-content: center;
+    opacity: 0; pointer-events: none;
+    transition: opacity 0.4s;
+    padding: 20px;
+  }
+  .login-overlay.open { opacity: 1; pointer-events: all; }
+
+  .login-box {
+    background: var(--dark);
+    border: 1px solid var(--border);
+    width: 100%; max-width: 460px;
+    transform: scale(0.95) translateY(24px);
+    transition: transform 0.4s cubic-bezier(0.16,1,0.3,1);
+    position: relative; overflow: hidden;
+  }
+  .login-overlay.open .login-box { transform: scale(1) translateY(0); }
+
+  .login-box-deco {
+    position: absolute; top: -40px; right: -40px;
+    width: 180px; height: 180px; border-radius: 50%;
+    background: radial-gradient(circle, rgba(201,168,76,0.1) 0%, transparent 70%);
+    pointer-events: none;
+  }
+
+  .login-head {
+    padding: 36px 40px 28px; text-align: center; position: relative;
+  }
+  .login-logo {
+    font-family: 'Cormorant Garamond', serif;
+    font-size: 1.8rem; letter-spacing: 0.35em;
+    color: var(--gold); text-transform: uppercase; margin-bottom: 8px;
+  }
+  .login-subtitle {
+    font-size: 0.62rem; letter-spacing: 0.25em; text-transform: uppercase;
+    color: var(--text-muted);
+  }
+
+  .login-tabs {
+    display: flex; border-bottom: 1px solid var(--border);
+  }
+  .login-tab {
+    flex: 1; padding: 14px; background: none; border: none; cursor: pointer;
+    font-family: 'Montserrat', sans-serif;
+    font-size: 0.62rem; letter-spacing: 0.2em; text-transform: uppercase;
+    color: var(--text-muted); transition: all 0.3s;
+    border-bottom: 2px solid transparent; margin-bottom: -1px;
+  }
+  .login-tab.active { color: var(--gold); border-bottom-color: var(--gold); }
+
+  .login-body { padding: 32px 40px 36px; }
+  .login-form { display: none; }
+  .login-form.active { display: block; }
+
+  .login-error {
+    background: rgba(231,76,60,0.1); border: 1px solid rgba(231,76,60,0.3);
+    color: #e74c3c; font-size: 0.65rem; letter-spacing: 0.1em;
+    padding: 10px 14px; margin-bottom: 18px; display: none;
+  }
+  .login-error.show { display: block; }
+  .login-success {
+    background: rgba(46,204,113,0.1); border: 1px solid rgba(46,204,113,0.3);
+    color: #2ecc71; font-size: 0.65rem; letter-spacing: 0.1em;
+    padding: 10px 14px; margin-bottom: 18px; display: none;
+  }
+  .login-success.show { display: block; }
+
+  .login-submit {
+    width: 100%; padding: 15px;
+    background: var(--gold); border: none; cursor: pointer;
+    color: var(--black); font-family: 'Montserrat', sans-serif;
+    font-size: 0.65rem; letter-spacing: 0.35em; text-transform: uppercase;
+    font-weight: 600; margin-top: 8px; transition: background 0.3s;
+  }
+  .login-submit:hover { background: var(--gold-light); }
+
+  .login-close {
+    position: absolute; top: 16px; right: 16px;
+    background: none; border: 1px solid var(--border);
+    color: var(--cream2); cursor: pointer;
+    width: 32px; height: 32px; font-size: 0.9rem;
+    display: flex; align-items: center; justify-content: center;
+    transition: all 0.3s; z-index: 1;
+  }
+  .login-close:hover { background: var(--gold); border-color: var(--gold); color: var(--black); }
+
+  .login-divider {
+    display: flex; align-items: center; gap: 12px;
+    margin: 20px 0; color: var(--text-muted);
+    font-size: 0.6rem; letter-spacing: 0.2em;
+  }
+  .login-divider::before, .login-divider::after {
+    content: ''; flex: 1; height: 1px; background: var(--border);
+  }
+  .social-login { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; margin-bottom: 4px; }
+  .social-btn {
+    padding: 10px; background: none; border: 1px solid var(--border);
+    color: var(--cream2); cursor: pointer; font-family: 'Montserrat', sans-serif;
+    font-size: 0.6rem; letter-spacing: 0.15em; text-transform: uppercase;
+    display: flex; align-items: center; justify-content: center; gap: 8px;
+    transition: all 0.3s;
+  }
+  .social-btn:hover { border-color: var(--gold); color: var(--gold); }
+
+  /* ─── PROFILE PANEL ─── */
+  .profile-overlay {
+    position: fixed; inset: 0; z-index: 3500;
+    background: rgba(0,0,0,0.85); backdrop-filter: blur(8px);
+    opacity: 0; pointer-events: none; transition: opacity 0.4s;
+  }
+  .profile-overlay.open { opacity: 1; pointer-events: all; }
+
+  .profile-panel {
+    position: fixed; top: 0; right: 0; bottom: 0;
+    width: min(700px, 100vw); z-index: 3600;
+    background: var(--dark); border-left: 1px solid var(--border);
+    transform: translateX(100%);
+    transition: transform 0.5s cubic-bezier(0.16,1,0.3,1);
+    display: flex; flex-direction: column; overflow: hidden;
+  }
+  .profile-panel.open { transform: translateX(0); }
+
+  .profile-panel-head {
+    padding: 28px 36px 24px; border-bottom: 1px solid var(--border);
+    display: flex; align-items: center; justify-content: space-between; flex-shrink: 0;
+  }
+  .profile-panel-title {
+    font-family: 'Cormorant Garamond', serif;
+    font-size: 1.8rem; font-weight: 300; color: var(--cream);
+  }
+  .profile-close {
+    background: none; border: 1px solid var(--border);
+    color: var(--cream2); cursor: pointer;
+    width: 36px; height: 36px; font-size: 1rem;
+    display: flex; align-items: center; justify-content: center; transition: all 0.3s;
+  }
+  .profile-close:hover { background: var(--gold); border-color: var(--gold); color: var(--black); }
+
+  .profile-tabs {
+    display: flex; border-bottom: 1px solid var(--border); flex-shrink: 0;
+  }
+  .profile-tab {
+    padding: 14px 24px; background: none; border: none; cursor: pointer;
+    font-family: 'Montserrat', sans-serif;
+    font-size: 0.6rem; letter-spacing: 0.2em; text-transform: uppercase;
+    color: var(--text-muted); transition: all 0.3s;
+    border-bottom: 2px solid transparent; margin-bottom: -1px;
+  }
+  .profile-tab.active { color: var(--gold); border-bottom-color: var(--gold); }
+
+  .profile-body { flex: 1; overflow-y: auto; padding: 32px 36px; }
+
+  .profile-avatar-section {
+    display: flex; align-items: center; gap: 24px;
+    padding: 28px; background: var(--dark2); border: 1px solid var(--border); margin-bottom: 28px;
+  }
+  .profile-avatar-large {
+    width: 72px; height: 72px; border-radius: 50%;
+    background: var(--gold); display: flex; align-items: center; justify-content: center;
+    font-family: 'Cormorant Garamond', serif;
+    font-size: 2rem; font-weight: 600; color: var(--black); flex-shrink: 0;
+  }
+  .profile-avatar-name {
+    font-family: 'Cormorant Garamond', serif;
+    font-size: 1.6rem; color: var(--cream); font-weight: 300; margin-bottom: 4px;
+  }
+  .profile-avatar-email { font-size: 0.65rem; color: var(--text-muted); letter-spacing: 0.12em; }
+  .profile-avatar-badge {
+    font-size: 0.55rem; letter-spacing: 0.25em; text-transform: uppercase;
+    color: var(--gold); background: rgba(201,168,76,0.1);
+    border: 1px solid var(--border); padding: 4px 10px; margin-top: 8px; display: inline-block;
+  }
+
+  .profile-section-title {
+    font-family: 'Cormorant Garamond', serif;
+    font-size: 1.2rem; color: var(--cream); margin-bottom: 18px;
+    padding-bottom: 10px; border-bottom: 1px solid var(--border);
+  }
+  .profile-field-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 16px; margin-bottom: 28px; }
+  .profile-field-label {
+    font-size: 0.55rem; letter-spacing: 0.25em; text-transform: uppercase;
+    color: var(--gold); margin-bottom: 6px; display: block;
+  }
+  .profile-field-value {
+    font-size: 0.8rem; color: var(--cream2); padding: 10px 14px;
+    background: var(--dark3); border: 1px solid var(--border);
+  }
+
+  .profile-edit-btn {
+    background: none; border: 1px solid var(--border);
+    color: var(--cream2); cursor: pointer; padding: 10px 24px;
+    font-family: 'Montserrat', sans-serif;
+    font-size: 0.6rem; letter-spacing: 0.25em; text-transform: uppercase;
+    transition: all 0.3s; margin-top: 4px;
+  }
+  .profile-edit-btn:hover { border-color: var(--gold); color: var(--gold); }
+  .profile-save-btn {
+    background: var(--gold); border: none; color: var(--black); cursor: pointer;
+    padding: 12px 28px; font-family: 'Montserrat', sans-serif;
+    font-size: 0.62rem; letter-spacing: 0.3em; text-transform: uppercase;
+    font-weight: 600; transition: background 0.3s; margin-top: 4px;
+  }
+  .profile-save-btn:hover { background: var(--gold-light); }
+
+  /* Settings */
+  .settings-group { margin-bottom: 32px; }
+  .settings-group-title {
+    font-size: 0.6rem; letter-spacing: 0.35em; text-transform: uppercase;
+    color: var(--gold); margin-bottom: 14px; padding-bottom: 10px; border-bottom: 1px solid var(--border);
+  }
+  .settings-row {
+    display: flex; align-items: center; justify-content: space-between;
+    padding: 14px 18px; background: var(--dark2); border: 1px solid var(--border); margin-bottom: 8px;
+  }
+  .settings-row-label { font-size: 0.75rem; color: var(--cream); margin-bottom: 3px; }
+  .settings-row-desc { font-size: 0.6rem; color: var(--text-muted); }
+  .toggle { position: relative; width: 46px; height: 24px; flex-shrink: 0; }
+  .toggle input { opacity: 0; width: 0; height: 0; }
+  .toggle-slider {
+    position: absolute; inset: 0; cursor: pointer;
+    background: var(--dark3); border: 1px solid var(--border); transition: 0.3s;
+  }
+  .toggle-slider:before {
+    content: ''; position: absolute;
+    width: 16px; height: 16px; left: 3px; top: 3px;
+    background: var(--text-muted); transition: 0.3s;
+  }
+  .toggle input:checked + .toggle-slider { background: rgba(201,168,76,0.2); border-color: var(--gold); }
+  .toggle input:checked + .toggle-slider:before { transform: translateX(22px); background: var(--gold); }
+
+  .settings-danger-zone {
+    padding: 20px; background: rgba(231,76,60,0.05);
+    border: 1px solid rgba(231,76,60,0.2);
+  }
+  .settings-danger-title {
+    font-size: 0.6rem; letter-spacing: 0.25em; text-transform: uppercase;
+    color: #e74c3c; margin-bottom: 12px;
+  }
+  .danger-btn {
+    background: none; border: 1px solid rgba(231,76,60,0.4);
+    color: #e74c3c; cursor: pointer; padding: 10px 20px;
+    font-family: 'Montserrat', sans-serif;
+    font-size: 0.6rem; letter-spacing: 0.2em; text-transform: uppercase;
+    transition: all 0.3s; margin-right: 10px; margin-bottom: 8px;
+  }
+  .danger-btn:hover { background: rgba(231,76,60,0.1); border-color: #e74c3c; }
+
+  /* Orders */
+  .order-card {
+    background: var(--dark2); border: 1px solid var(--border);
+    padding: 18px 20px; margin-bottom: 12px;
+  }
+  .order-card-head {
+    display: flex; justify-content: space-between; align-items: center;
+    margin-bottom: 10px; flex-wrap: wrap; gap: 8px;
+  }
+  .order-id { font-size: 0.6rem; letter-spacing: 0.2em; color: var(--gold); }
+  .order-date { font-size: 0.6rem; color: var(--text-muted); }
+  .order-status {
+    font-size: 0.55rem; letter-spacing: 0.2em; text-transform: uppercase;
+    padding: 3px 10px; border: 1px solid;
+  }
+  .order-status.delivered { color: #2ecc71; border-color: rgba(46,204,113,0.3); background: rgba(46,204,113,0.07); }
+  .order-status.processing { color: var(--gold); border-color: var(--border); background: rgba(201,168,76,0.07); }
+  .order-items { font-size: 0.72rem; color: var(--cream2); margin-bottom: 8px; }
+  .order-total { font-family: 'Cormorant Garamond', serif; font-size: 1.2rem; color: var(--gold); }
+
+  /* ─── PRODUCT DETAIL PAGE ─── */
+  .detail-overlay {
+    position: fixed; inset: 0; z-index: 5000;
+    background: var(--black);
+    opacity: 0; pointer-events: none;
+    transition: opacity 0.5s cubic-bezier(0.16,1,0.3,1);
+    overflow-y: auto;
+  }
+  .detail-overlay.open { opacity: 1; pointer-events: all; }
+
+  .detail-nav {
+    position: sticky; top: 0; z-index: 10;
+    padding: 18px 50px;
+    background: rgba(8,8,8,0.95); backdrop-filter: blur(8px);
+    border-bottom: 1px solid var(--border);
+    display: flex; align-items: center; justify-content: space-between;
+  }
+  .detail-back {
+    display: flex; align-items: center; gap: 10px;
+    background: none; border: none; cursor: pointer;
+    color: var(--cream2); font-family: 'Montserrat', sans-serif;
+    font-size: 0.65rem; letter-spacing: 0.2em; text-transform: uppercase;
+    transition: color 0.3s;
+  }
+  .detail-back:hover { color: var(--gold); }
+  .detail-back svg { transition: transform 0.3s; }
+  .detail-back:hover svg { transform: translateX(-4px); }
+  .detail-nav-logo {
+    font-family: 'Cormorant Garamond', serif;
+    font-size: 1.4rem; letter-spacing: 0.3em; color: var(--gold); text-transform: uppercase;
+  }
+
+  .detail-body {
+    max-width: 1200px; margin: 0 auto; padding: 60px 50px 100px;
+  }
+
+  .detail-hero {
+    display: grid; grid-template-columns: 1fr 1fr; gap: 80px;
+    margin-bottom: 80px; align-items: start;
+  }
+
+  .detail-img-col { position: sticky; top: 100px; }
+  .detail-img-main {
+    aspect-ratio: 3/4; background: var(--dark2);
+    border: 1px solid var(--border); overflow: hidden;
+    position: relative; margin-bottom: 16px;
+  }
+  .detail-img-main img {
+    width: 100%; height: 100%;
+    object-fit: cover; object-position: center;
+    transition: transform 0.6s cubic-bezier(0.16,1,0.3,1);
+  }
+  .detail-img-main:hover img { transform: scale(1.05); }
+
+  .detail-img-badge {
+    position: absolute; top: 16px; left: 16px;
+    background: rgba(8,8,8,0.85); border: 1px solid var(--border);
+    color: var(--gold); font-size: 0.55rem; letter-spacing: 0.3em;
+    text-transform: uppercase; padding: 5px 12px;
+  }
+
+  .detail-season-tags {
+    display: flex; flex-wrap: wrap; gap: 8px;
+  }
+  .season-tag {
+    display: flex; align-items: center; gap: 6px;
+    padding: 6px 14px; border: 1px solid var(--border);
+    font-size: 0.6rem; letter-spacing: 0.15em; text-transform: uppercase;
+    color: var(--text-muted); background: var(--dark2);
+  }
+  .season-tag.active { border-color: var(--gold); color: var(--gold); background: rgba(201,168,76,0.07); }
+
+  .detail-info-col {}
+
+  .detail-breadcrumb {
+    font-size: 0.58rem; letter-spacing: 0.25em; text-transform: uppercase;
+    color: var(--text-muted); margin-bottom: 12px;
+    display: flex; align-items: center; gap: 8px;
+  }
+  .detail-breadcrumb span { color: var(--gold); }
+
+  .detail-title {
+    font-family: 'Cormorant Garamond', serif;
+    font-size: clamp(2.4rem, 4vw, 3.8rem);
+    font-weight: 300; line-height: 1.05; color: var(--cream);
+    margin-bottom: 8px;
+  }
+  .detail-type-line {
+    font-size: 0.65rem; letter-spacing: 0.3em; text-transform: uppercase;
+    color: var(--gold); margin-bottom: 20px;
+  }
+
+  .detail-rating-row {
+    display: flex; align-items: center; gap: 14px; margin-bottom: 24px;
+  }
+  .stars { display: flex; gap: 3px; }
+  .star { color: var(--gold); font-size: 0.9rem; }
+  .star.empty { color: var(--dark3); }
+  .rating-count { font-size: 0.62rem; color: var(--text-muted); letter-spacing: 0.1em; }
+
+  .detail-desc {
+    font-size: 0.8rem; line-height: 2; color: var(--cream2);
+    margin-bottom: 32px; border-left: 2px solid var(--gold-dim);
+    padding-left: 18px;
+  }
+
+  .detail-size-section { margin-bottom: 28px; }
+  .detail-section-label {
+    font-size: 0.58rem; letter-spacing: 0.3em; text-transform: uppercase;
+    color: var(--gold); margin-bottom: 12px;
+  }
+  .detail-sizes {
+    display: flex; flex-wrap: wrap; gap: 10px;
+  }
+  .detail-size-opt {
+    padding: 10px 20px; border: 1px solid var(--border);
+    background: none; cursor: pointer;
+    font-family: 'Montserrat', sans-serif;
+    font-size: 0.65rem; letter-spacing: 0.15em; text-transform: uppercase;
+    color: var(--cream2); transition: all 0.25s;
+    display: flex; flex-direction: column; align-items: center; gap: 4px;
+  }
+  .detail-size-opt:hover { border-color: var(--gold); color: var(--gold); }
+  .detail-size-opt.active { border-color: var(--gold); background: rgba(201,168,76,0.1); color: var(--gold); }
+  .detail-size-price {
+    font-family: 'Cormorant Garamond', serif;
+    font-size: 1rem; color: var(--gold);
+  }
+
+  .detail-price-display {
+    font-family: 'Cormorant Garamond', serif;
+    font-size: 2.6rem; color: var(--gold); font-weight: 300;
+    margin-bottom: 24px;
+  }
+  .detail-price-display sup { font-size: 1.2rem; vertical-align: super; }
+
+  .detail-actions {
+    display: flex; gap: 12px; margin-bottom: 32px; flex-wrap: wrap;
+  }
+  .detail-add-btn {
+    flex: 1; min-width: 160px; padding: 16px 28px;
+    background: var(--gold); border: none; cursor: pointer;
+    color: var(--black); font-family: 'Montserrat', sans-serif;
+    font-size: 0.65rem; letter-spacing: 0.35em; text-transform: uppercase;
+    font-weight: 600; transition: background 0.3s;
+  }
+  .detail-add-btn:hover { background: var(--gold-light); }
+  .detail-wishlist-btn {
+    padding: 16px 20px; background: none; border: 1px solid var(--border);
+    color: var(--cream2); cursor: pointer; transition: all 0.3s; font-size: 1rem;
+  }
+  .detail-wishlist-btn:hover { border-color: var(--gold); color: var(--gold); }
+  .detail-wishlist-btn.wishlisted { border-color: var(--gold); color: var(--gold); background: rgba(201,168,76,0.07); }
+
+  /* Notes pyramid */
+  .notes-section { margin-bottom: 48px; }
+  .notes-pyramid {
+    display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 1px;
+    background: var(--border); border: 1px solid var(--border);
+    margin-top: 16px;
+  }
+  .notes-col {
+    background: var(--dark2); padding: 20px 18px;
+    display: flex; flex-direction: column; gap: 8px;
+  }
+  .notes-col-title {
+    font-size: 0.55rem; letter-spacing: 0.3em; text-transform: uppercase;
+    color: var(--gold); margin-bottom: 4px; display: flex; align-items: center; gap: 6px;
+  }
+  .notes-col-title::before { content: ''; display: block; width: 20px; height: 1px; background: var(--gold-dim); }
+  .note-pill {
+    font-size: 0.68rem; color: var(--cream2); letter-spacing: 0.05em;
+    padding: 5px 0; border-bottom: 1px solid rgba(201,168,76,0.08);
+    display: flex; align-items: center; gap: 8px;
+  }
+  .note-pill::before { content: '◆'; font-size: 0.4rem; color: var(--gold-dim); flex-shrink: 0; }
+
+  /* Fragrance profile bars */
+  .profile-section { margin-bottom: 48px; }
+  .profile-bar-row {
+    display: flex; align-items: center; gap: 14px; margin-bottom: 10px;
+  }
+  .profile-bar-label { font-size: 0.6rem; letter-spacing: 0.15em; text-transform: uppercase; color: var(--text-muted); width: 90px; flex-shrink: 0; }
+  .profile-bar-track {
+    flex: 1; height: 3px; background: var(--dark3); position: relative; overflow: hidden;
+  }
+  .profile-bar-fill {
+    height: 100%; background: linear-gradient(to right, var(--gold-dim), var(--gold));
+    transition: width 0.8s cubic-bezier(0.16,1,0.3,1);
+  }
+  .profile-bar-val { font-size: 0.6rem; color: var(--gold); width: 30px; text-align: right; flex-shrink: 0; }
+
+  /* Reviews */
+  .reviews-section { padding-top: 60px; border-top: 1px solid var(--border); }
+  .reviews-header {
+    display: flex; align-items: flex-end; justify-content: space-between;
+    margin-bottom: 36px; flex-wrap: wrap; gap: 16px;
+  }
+  .reviews-avg {
+    font-family: 'Cormorant Garamond', serif;
+    font-size: 4rem; font-weight: 300; color: var(--gold); line-height: 1;
+  }
+  .reviews-meta { margin-top: 6px; }
+  .reviews-count { font-size: 0.62rem; letter-spacing: 0.15em; color: var(--text-muted); }
+
+  .write-review-btn {
+    padding: 12px 28px; background: none; border: 1px solid var(--gold);
+    color: var(--gold); cursor: pointer; font-family: 'Montserrat', sans-serif;
+    font-size: 0.62rem; letter-spacing: 0.25em; text-transform: uppercase;
+    transition: all 0.3s;
+  }
+  .write-review-btn:hover { background: var(--gold); color: var(--black); }
+
+  .review-form-box {
+    background: var(--dark2); border: 1px solid var(--border);
+    padding: 28px; margin-bottom: 32px; display: none;
+  }
+  .review-form-box.open { display: block; animation: slideIn 0.3s ease; }
+
+  .star-picker {
+    display: flex; gap: 6px; margin-bottom: 20px;
+  }
+  .star-pick {
+    font-size: 1.4rem; cursor: pointer; color: var(--dark3);
+    transition: color 0.15s, transform 0.15s;
+  }
+  .star-pick:hover, .star-pick.lit { color: var(--gold); transform: scale(1.2); }
+
+  .review-card {
+    padding: 24px 0; border-bottom: 1px solid var(--border);
+    animation: slideIn 0.3s ease;
+  }
+  .review-card-head {
+    display: flex; align-items: center; justify-content: space-between;
+    margin-bottom: 8px; flex-wrap: wrap; gap: 8px;
+  }
+  .reviewer-name {
+    font-family: 'Cormorant Garamond', serif;
+    font-size: 1.05rem; color: var(--cream);
+  }
+  .review-date { font-size: 0.58rem; color: var(--text-muted); }
+  .review-title {
+    font-size: 0.8rem; font-weight: 500; color: var(--cream2); margin-bottom: 6px;
+  }
+  .review-text { font-size: 0.75rem; color: var(--text-muted); line-height: 1.9; }
+  .review-verified {
+    font-size: 0.55rem; letter-spacing: 0.2em; text-transform: uppercase;
+    color: #2ecc71; margin-top: 8px; display: flex; align-items: center; gap: 6px;
+  }
+  .review-tag {
+    display: inline-block; font-size: 0.55rem; letter-spacing: 0.15em;
+    text-transform: uppercase; padding: 3px 10px;
+    border: 1px solid var(--border); color: var(--text-muted); margin-top: 8px; margin-right: 6px;
+  }
+
+  .no-reviews {
+    text-align: center; padding: 48px 20px; color: var(--text-muted);
+  }
+  .no-reviews-icon { font-size: 2.5rem; margin-bottom: 12px; opacity: 0.3; }
+
+  @media (max-width: 900px) {
+    .detail-hero { grid-template-columns: 1fr; gap: 36px; }
+    .detail-img-col { position: static; }
+    .detail-body { padding: 36px 20px 80px; }
+    .detail-nav { padding: 16px 20px; }
+    .notes-pyramid { grid-template-columns: 1fr; }
+  }
+</style>
+</head>
+<body>
+
+<!-- ─── NAV ─── -->
+<nav id="navbar">
+  <a class="logo" href="#">FRAG<span>ASM</span></a>
+  <ul class="nav-links">
+    <li><a href="javascript:void(0)" onclick="scrollToSection('dior')">Dior</a></li>
+    <li><a href="javascript:void(0)" onclick="scrollToSection('armani')">Armani</a></li>
+    <li><a href="javascript:void(0)" onclick="scrollToSection('versace')">Versace</a></li>
+    <li><a href="javascript:void(0)" onclick="scrollToSection('creed')">Creed</a></li>
+    <li><a href="javascript:void(0)" onclick="scrollToSection('jo-malone')">Jo Malone</a></li>
+    <li><a href="javascript:void(0)" onclick="scrollToSection('parfums-de-marly')">Parfums de Marly</a></li>
+  </ul>
+  <div class="nav-right">
+    <div class="user-menu-wrap" id="user-menu-wrap" style="display:none">
+      <button class="user-avatar-btn" id="user-avatar-btn" onclick="toggleDropdown()">?</button>
+      <div class="user-dropdown" id="user-dropdown">
+        <div class="dropdown-header">
+          <div class="dropdown-name" id="dropdown-name">—</div>
+          <div class="dropdown-email" id="dropdown-email">—</div>
+        </div>
+        <button class="dropdown-item" onclick="openProfile('account'); closeDropdown()">
+          <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><circle cx="12" cy="8" r="4"/><path d="M4 20c0-4 3.6-7 8-7s8 3 8 7"/></svg>
+          My Profile
+        </button>
+        <button class="dropdown-item" onclick="openProfile('orders'); closeDropdown()">
+          <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2"/></svg>
+          My Orders
+        </button>
+        <button class="dropdown-item" onclick="openProfile('settings'); closeDropdown()">
+          <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.65 1.65 0 00.33 1.82l.06.06a2 2 0 010 2.83 2 2 0 01-2.83 0l-.06-.06a1.65 1.65 0 00-1.82-.33 1.65 1.65 0 00-1 1.51V21a2 2 0 01-4 0v-.09A1.65 1.65 0 009 19.4a1.65 1.65 0 00-1.82.33l-.06.06a2 2 0 01-2.83-2.83l.06-.06A1.65 1.65 0 004.68 15a1.65 1.65 0 00-1.51-1H3a2 2 0 010-4h.09A1.65 1.65 0 004.6 9a1.65 1.65 0 00-.33-1.82l-.06-.06a2 2 0 012.83-2.83l.06.06A1.65 1.65 0 009 4.68a1.65 1.65 0 001-1.51V3a2 2 0 014 0v.09a1.65 1.65 0 001 1.51 1.65 1.65 0 001.82-.33l.06-.06a2 2 0 012.83 2.83l-.06.06A1.65 1.65 0 0019.4 9a1.65 1.65 0 001.51 1H21a2 2 0 010 4h-.09a1.65 1.65 0 00-1.51 1z"/></svg>
+          Settings
+        </button>
+        <div class="dropdown-divider"></div>
+        <button class="dropdown-item danger" onclick="logoutUser(); closeDropdown()">
+          <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M9 21H5a2 2 0 01-2-2V5a2 2 0 012-2h4M16 17l5-5-5-5M21 12H9"/></svg>
+          Sign Out
+        </button>
+      </div>
+    </div>
+    <button class="auth-btn" id="login-nav-btn" onclick="openLogin()">
+      <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><circle cx="12" cy="8" r="4"/><path d="M4 20c0-4 3.6-7 8-7s8 3 8 7"/></svg>
+      Sign In
+    </button>
+    <button class="cart-btn" onclick="openCart()">
+      <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M6 2L3 6v14a2 2 0 002 2h14a2 2 0 002-2V6l-3-4z"/><line x1="3" y1="6" x2="21" y2="6"/><path d="M16 10a4 4 0 01-8 0"/></svg>
+      Cart
+      <span id="cart-count">0</span>
+    </button>
+  </div>
+</nav>
+
+<!-- ─── HERO ─── -->
+<section class="hero">
+  <div class="hero-bg"></div>
+  <div class="hero-noise"></div>
+  <div class="hero-lines">
+    <div class="hero-line"></div>
+    <div class="hero-line"></div>
+    <div class="hero-vert"></div>
+    <div class="hero-vert"></div>
+  </div>
+  <div class="hero-content">
+    <div class="hero-eyebrow">The Art of Scent</div>
+    <h1 class="hero-title">
+      Wear<br><em>Your Story</em>
+    </h1>
+    <p class="hero-sub">Curated collection of the world's most extraordinary luxury fragrances</p>
+    <a class="hero-cta" href="javascript:void(0)" onclick="scrollToSection('dior')"><span>Explore Collection</span></a>
+  </div>
+  <div class="hero-scroll">
+    Scroll
+    <div class="hero-scroll-line"></div>
+  </div>
+</section>
+
+<!-- ─── MARQUEE ─── -->
+<div class="marquee-wrap">
+  <div class="marquee-track" id="marquee">
+    <span>Dior</span><span class="dot">◆</span>
+    <span>Armani</span><span class="dot">◆</span>
+    <span>Versace</span><span class="dot">◆</span>
+    <span>Creed</span><span class="dot">◆</span>
+    <span>Jo Malone London</span><span class="dot">◆</span>
+    <span>Parfums de Marly</span><span class="dot">◆</span>
+    <span>Luxury Fragrance</span><span class="dot">◆</span>
+    <span>Eau de Parfum</span><span class="dot">◆</span>
+    <span>Dior</span><span class="dot">◆</span>
+    <span>Armani</span><span class="dot">◆</span>
+    <span>Versace</span><span class="dot">◆</span>
+    <span>Creed</span><span class="dot">◆</span>
+    <span>Jo Malone London</span><span class="dot">◆</span>
+    <span>Parfums de Marly</span><span class="dot">◆</span>
+    <span>Luxury Fragrance</span><span class="dot">◆</span>
+    <span>Eau de Parfum</span><span class="dot">◆</span>
+  </div>
+</div>
+
+<!-- ─── BRAND NAV ─── -->
+<div class="brand-nav">
+  <ul class="brand-nav-list">
+    <a href="javascript:void(0)" onclick="scrollToSection('dior')">Christian Dior</a>
+    <a href="javascript:void(0)" onclick="scrollToSection('armani')">Giorgio Armani</a>
+    <a href="javascript:void(0)" onclick="scrollToSection('versace')">Versace</a>
+    <a href="javascript:void(0)" onclick="scrollToSection('creed')">Creed</a>
+    <a href="javascript:void(0)" onclick="scrollToSection('jo-malone')">Jo Malone London</a>
+    <a href="javascript:void(0)" onclick="scrollToSection('parfums-de-marly')">Parfums de Marly</a>
+  </ul>
+</div>
+
+<!-- ─── DIOR ─── -->
+<section class="brand-section" id="dior">
+  <div class="brand-deco">Dior</div>
+  <div class="brand-header">
+    <div>
+      <p class="section-eyebrow" style="justify-content:flex-start;padding-left:0">Est. 1947 · Paris</p>
+      <h2 class="brand-name">Christian <span>Dior</span></h2>
+    </div>
+    <p class="brand-tagline">Where fashion meets fragrance — an eternal Parisian dream</p>
+  </div>
+  <div class="product-grid" id="grid-dior"></div>
+</section>
+
+<!-- ─── ARMANI ─── -->
+<section class="brand-section" id="armani">
+  <div class="brand-deco">Armani</div>
+  <div class="brand-header">
+    <div>
+      <p class="section-eyebrow" style="justify-content:flex-start;padding-left:0">Est. 1975 · Milan</p>
+      <h2 class="brand-name">Giorgio <span>Armani</span></h2>
+    </div>
+    <p class="brand-tagline">Italian elegance distilled into every drop</p>
+  </div>
+  <div class="product-grid" id="grid-armani"></div>
+</section>
+
+<!-- ─── VERSACE ─── -->
+<section class="brand-section" id="versace">
+  <div class="brand-deco">Versace</div>
+  <div class="brand-header">
+    <div>
+      <p class="section-eyebrow" style="justify-content:flex-start;padding-left:0">Est. 1978 · Milan</p>
+      <h2 class="brand-name"><span>Versace</span></h2>
+    </div>
+    <p class="brand-tagline">Bold, audacious, unapologetically luxurious</p>
+  </div>
+  <div class="product-grid" id="grid-versace"></div>
+</section>
+
+<!-- ─── CREED ─── -->
+<section class="brand-section" id="creed">
+  <div class="brand-deco">Creed</div>
+  <div class="brand-header">
+    <div>
+      <p class="section-eyebrow" style="justify-content:flex-start;padding-left:0">Est. 1760 · London</p>
+      <h2 class="brand-name"><span>Creed</span></h2>
+    </div>
+    <p class="brand-tagline">Over 260 years of perfumery heritage and royal patronage</p>
+  </div>
+  <div class="product-grid" id="grid-creed"></div>
+</section>
+
+<!-- ─── JO MALONE ─── -->
+<section class="brand-section" id="jo-malone">
+  <div class="brand-deco">Jo Malone</div>
+  <div class="brand-header">
+    <div>
+      <p class="section-eyebrow" style="justify-content:flex-start;padding-left:0">Est. 1994 · London</p>
+      <h2 class="brand-name">Jo Malone <span>London</span></h2>
+    </div>
+    <p class="brand-tagline">The art of combining — uniquely British, effortlessly modern</p>
+  </div>
+  <div class="product-grid" id="grid-jo-malone"></div>
+</section>
+
+<!-- ─── PARFUMS DE MARLY ─── -->
+<section class="brand-section" id="parfums-de-marly">
+  <div class="brand-deco">de Marly</div>
+  <div class="brand-header">
+    <div>
+      <p class="section-eyebrow" style="justify-content:flex-start;padding-left:0">Est. 2009 · Paris</p>
+      <h2 class="brand-name">Parfums <span>de Marly</span></h2>
+    </div>
+    <p class="brand-tagline">Inspired by the opulence of the French Royal Court of Versailles</p>
+  </div>
+  <div class="product-grid" id="grid-parfums-de-marly"></div>
+</section>
+
+<!-- ─── FOOTER ─── -->
+<footer>
+  <div class="footer-top">
+    <div>
+      <div class="footer-brand">FRAGASM</div>
+      <p class="footer-desc">A curated destination for the world's most extraordinary luxury fragrances. Each bottle tells a story — let yours begin here.</p>
+    </div>
+    <div class="footer-col">
+      <div class="footer-col-title">Maisons</div>
+      <ul>
+        <li><a href="javascript:void(0)" onclick="scrollToSection('dior')">Christian Dior</a></li>
+        <li><a href="javascript:void(0)" onclick="scrollToSection('armani')">Giorgio Armani</a></li>
+        <li><a href="javascript:void(0)" onclick="scrollToSection('versace')">Versace</a></li>
+        <li><a href="javascript:void(0)" onclick="scrollToSection('creed')">Creed</a></li>
+        <li><a href="javascript:void(0)" onclick="scrollToSection('jo-malone')">Jo Malone London</a></li>
+        <li><a href="javascript:void(0)" onclick="scrollToSection('parfums-de-marly')">Parfums de Marly</a></li>
+      </ul>
+    </div>
+    <div class="footer-col">
+      <div class="footer-col-title">Service</div>
+      <ul>
+        <li><a href="#">Fragrance Finder</a></li>
+        <li><a href="#">Gift Wrapping</a></li>
+        <li><a href="#">Express Delivery</a></li>
+        <li><a href="#">Returns Policy</a></li>
+        <li><a href="#">Track Order</a></li>
+      </ul>
+    </div>
+    <div class="footer-col">
+      <div class="footer-col-title">About</div>
+      <ul>
+        <li><a href="#">Our Story</a></li>
+        <li><a href="#">Sustainability</a></li>
+        <li><a href="#">Careers</a></li>
+        <li><a href="#">Press</a></li>
+        <li><a href="#">Contact</a></li>
+      </ul>
+    </div>
+  </div>
+  <div class="footer-bottom">
+    <p class="footer-copy">© 2026 FRAGASM. All rights reserved. All fragrances are authentic and sourced directly from brand partners.</p>
+    <p class="footer-copy">Crafted with passion for the art of scent.</p>
+  </div>
+</footer>
+
+<!-- ─── CART SIDEBAR ─── -->
+<div class="cart-overlay" id="cart-overlay" onclick="closeCart()"></div>
+<div class="cart-sidebar" id="cart-sidebar">
+  <div class="cart-head">
+    <div class="cart-head-title">Your Selection</div>
+    <button class="cart-close" onclick="closeCart()">✕</button>
+  </div>
+  <div class="cart-body" id="cart-body">
+    <div class="cart-empty">
+      <div class="cart-empty-icon">🧴</div>
+      <div class="cart-empty-text">Your cart is empty</div>
+      <div class="cart-empty-sub">Add a fragrance to begin</div>
+    </div>
+  </div>
+  <div class="cart-foot">
+    <div class="cart-subtotal">
+      <span class="cart-subtotal-label">Subtotal</span>
+      <span class="cart-subtotal-val" id="cart-total">₹0</span>
+    </div>
+    <p class="cart-note">Includes complimentary gift wrapping · Free delivery on orders above ₹5,000</p>
+    <button class="checkout-btn" onclick="openCheckout()">Proceed to Checkout</button>
+    <button class="continue-btn" onclick="closeCart()">Continue Shopping</button>
+  </div>
+</div>
+
+<!-- ─── CHECKOUT MODAL ─── -->
+<div class="checkout-overlay" id="checkout-overlay">
+  <div class="checkout-modal">
+    <div id="checkout-form-wrap">
+      <div class="checkout-head">
+        <div class="checkout-title">Checkout</div>
+        <button class="checkout-close" onclick="closeCheckout()">✕</button>
+      </div>
+      <div class="checkout-body">
+        <div class="checkout-summary" id="checkout-summary"></div>
+        <div class="form-section-title">Delivery Details</div>
+        <div class="form-row">
+          <div class="form-group">
+            <label class="form-label">First Name</label>
+            <input class="form-input" type="text" placeholder="Arjun">
+          </div>
+          <div class="form-group">
+            <label class="form-label">Last Name</label>
+            <input class="form-input" type="text" placeholder="Sharma">
+          </div>
+        </div>
+        <div class="form-group">
+          <label class="form-label">Email Address</label>
+          <input class="form-input" type="email" placeholder="arjun@example.com">
+        </div>
+        <div class="form-group">
+          <label class="form-label">Phone</label>
+          <input class="form-input" type="tel" placeholder="+91 98765 43210">
+        </div>
+        <div class="form-group">
+          <label class="form-label">Delivery Address</label>
+          <input class="form-input" type="text" placeholder="123, MG Road, Koregaon Park">
+        </div>
+        <div class="form-row">
+          <div class="form-group">
+            <label class="form-label">City</label>
+            <input class="form-input" type="text" placeholder="Pune">
+          </div>
+          <div class="form-group">
+            <label class="form-label">PIN Code</label>
+            <input class="form-input" type="text" placeholder="411001">
+          </div>
+        </div>
+        <div class="form-section-title">Payment</div>
+        <div class="form-group">
+          <label class="form-label">Card Number</label>
+          <input class="form-input" type="text" placeholder="4242 4242 4242 4242" maxlength="19">
+        </div>
+        <div class="form-row">
+          <div class="form-group">
+            <label class="form-label">Expiry</label>
+            <input class="form-input" type="text" placeholder="MM / YY" maxlength="7">
+          </div>
+          <div class="form-group">
+            <label class="form-label">CVV</label>
+            <input class="form-input" type="text" placeholder="123" maxlength="3">
+          </div>
+        </div>
+        <button class="place-order-btn" onclick="placeOrder()">Place Order</button>
+      </div>
+    </div>
+    <div class="order-success" id="order-success">
+      <div class="success-icon">✨</div>
+      <div class="success-title">Order Confirmed</div>
+      <p class="success-sub" style="margin-bottom:20px">Your fragrance is on its way</p>
+      <p style="font-size:0.7rem;color:var(--text-muted);line-height:1.8">You will receive a confirmation email shortly.<br>Expected delivery: 3–5 business days.</p>
+      <button class="checkout-btn" style="margin-top:30px;max-width:240px" onclick="closeAll()">Back to Shopping</button>
+    </div>
+  </div>
+</div>
+
+<!-- ─── LOGIN OVERLAY ─── -->
+<div class="login-overlay" id="login-overlay">
+  <div class="login-box">
+    <div class="login-box-deco"></div>
+    <button class="login-close" onclick="closeLogin()">✕</button>
+    <div class="login-head">
+      <div class="login-logo">FRAGASM</div>
+      <div class="login-subtitle">Your luxury fragrance journey begins here</div>
+    </div>
+    <div class="login-tabs">
+      <button class="login-tab active" id="tab-signin" onclick="switchLoginTab('signin')">Sign In</button>
+      <button class="login-tab" id="tab-signup" onclick="switchLoginTab('signup')">Create Account</button>
+    </div>
+    <div class="login-body">
+
+      <!-- SIGN IN FORM -->
+      <div class="login-form active" id="form-signin">
+        <div class="login-error" id="signin-error">Invalid email or password. Please try again.</div>
+        <div class="form-group">
+          <label class="form-label">Email Address</label>
+          <input class="form-input" id="signin-email" type="email" placeholder="you@example.com">
+        </div>
+        <div class="form-group">
+          <label class="form-label">Password</label>
+          <input class="form-input" id="signin-password" type="password" placeholder="••••••••">
+        </div>
+        <button class="login-submit" onclick="handleSignIn()">Sign In to FRAGASM</button>
+        <div class="login-divider">or continue with</div>
+        <div class="social-login">
+          <button class="social-btn" onclick="handleSocialLogin('Google')">
+            <svg width="14" height="14" viewBox="0 0 24 24" fill="currentColor"><path d="M22.56 12.25c0-.78-.07-1.53-.2-2.25H12v4.26h5.92c-.26 1.37-1.04 2.53-2.21 3.31v2.77h3.57c2.08-1.92 3.28-4.74 3.28-8.09z" fill="#4285F4"/><path d="M12 23c2.97 0 5.46-.98 7.28-2.66l-3.57-2.77c-.98.66-2.23 1.06-3.71 1.06-2.86 0-5.29-1.93-6.16-4.53H2.18v2.84C3.99 20.53 7.7 23 12 23z" fill="#34A853"/><path d="M5.84 14.09c-.22-.66-.35-1.36-.35-2.09s.13-1.43.35-2.09V7.07H2.18C1.43 8.55 1 10.22 1 12s.43 3.45 1.18 4.93l2.85-2.22.81-.62z" fill="#FBBC05"/><path d="M12 5.38c1.62 0 3.06.56 4.21 1.64l3.15-3.15C17.45 2.09 14.97 1 12 1 7.7 1 3.99 3.47 2.18 7.07l3.66 2.84c.87-2.6 3.3-4.53 6.16-4.53z" fill="#EA4335"/></svg>
+            Google
+          </button>
+          <button class="social-btn" onclick="handleSocialLogin('Apple')">
+            <svg width="14" height="14" viewBox="0 0 24 24" fill="currentColor"><path d="M18.71 19.5c-.83 1.24-1.71 2.45-3.05 2.47-1.34.03-1.77-.79-3.29-.79-1.53 0-2 .77-3.27.82-1.31.05-2.3-1.32-3.14-2.53C4.25 17 2.94 12.45 4.7 9.39c.87-1.52 2.43-2.48 4.12-2.51 1.28-.02 2.5.87 3.29.87.78 0 2.26-1.07 3.8-.91.65.03 2.47.26 3.64 1.98-.09.06-2.17 1.28-2.15 3.81.03 3.02 2.65 4.03 2.68 4.04-.03.07-.42 1.44-1.38 2.83M13 3.5c.73-.83 1.94-1.46 2.94-1.5.13 1.17-.34 2.35-1.04 3.19-.69.85-1.83 1.51-2.95 1.42-.15-1.15.41-2.35 1.05-3.11z"/></svg>
+            Apple
+          </button>
+        </div>
+      </div>
+
+      <!-- SIGN UP FORM -->
+      <div class="login-form" id="form-signup">
+        <div class="login-error" id="signup-error">Please fill in all fields correctly.</div>
+        <div class="login-success" id="signup-success">Account created! Signing you in…</div>
+        <div class="form-row">
+          <div class="form-group">
+            <label class="form-label">First Name</label>
+            <input class="form-input" id="signup-fname" type="text" placeholder="Arjun">
+          </div>
+          <div class="form-group">
+            <label class="form-label">Last Name</label>
+            <input class="form-input" id="signup-lname" type="text" placeholder="Sharma">
+          </div>
+        </div>
+        <div class="form-group">
+          <label class="form-label">Email Address</label>
+          <input class="form-input" id="signup-email" type="email" placeholder="arjun@example.com">
+        </div>
+        <div class="form-group">
+          <label class="form-label">Phone</label>
+          <input class="form-input" id="signup-phone" type="tel" placeholder="+91 98765 43210">
+        </div>
+        <div class="form-group">
+          <label class="form-label">Password</label>
+          <input class="form-input" id="signup-password" type="password" placeholder="Min. 6 characters">
+        </div>
+        <button class="login-submit" onclick="handleSignUp()">Create My Account</button>
+      </div>
+
+    </div>
+  </div>
+</div>
+
+<!-- ─── PROFILE PANEL ─── -->
+<div class="profile-overlay" id="profile-overlay" onclick="closeProfile()"></div>
+<div class="profile-panel" id="profile-panel">
+  <div class="profile-panel-head">
+    <div class="profile-panel-title" id="profile-panel-title">My Profile</div>
+    <button class="profile-close" onclick="closeProfile()">✕</button>
+  </div>
+  <div class="profile-tabs">
+    <button class="profile-tab active" id="ptab-account" onclick="switchProfileTab('account')">Account</button>
+    <button class="profile-tab" id="ptab-orders" onclick="switchProfileTab('orders')">Orders</button>
+    <button class="profile-tab" id="ptab-settings" onclick="switchProfileTab('settings')">Settings</button>
+  </div>
+  <div class="profile-body" id="profile-body">
+    <!-- content injected by JS -->
+  </div>
+</div>
+
+<!-- ─── PRODUCT DETAIL PAGE ─── -->
+<div class="detail-overlay" id="detail-overlay">
+  <div class="detail-nav">
+    <button class="detail-back" onclick="closeDetail()">
+      <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M19 12H5M12 19l-7-7 7-7"/></svg>
+      Back to Collection
+    </button>
+    <div class="detail-nav-logo">FRAGASM</div>
+    <button class="cart-btn" onclick="openCart()" style="position:relative">
+      <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M6 2L3 6v14a2 2 0 002 2h14a2 2 0 002-2V6l-3-4z"/><line x1="3" y1="6" x2="21" y2="6"/><path d="M16 10a4 4 0 01-8 0"/></svg>
+      Cart <span id="detail-cart-count">0</span>
+    </button>
+  </div>
+  <div class="detail-body" id="detail-body">
+    <!-- injected by JS -->
+  </div>
+</div>
+
+<!-- ─── TOAST ─── -->
+<div class="toast" id="toast">
+  <div class="toast-dot"></div>
+  <span id="toast-msg">Added to cart</span>
+</div>
+
+<script>
+// ══════════════════════════════════════════════════
+//  SCROLL TO SECTION
+// ══════════════════════════════════════════════════
+function scrollToSection(id) {
+  const el = document.getElementById(id);
+  if (!el) return;
+  const offset = 130;
+  const top = el.getBoundingClientRect().top + window.pageYOffset - offset;
+  window.scrollTo({ top, behavior: 'smooth' });
+}
+
+// ══════════════════════════════════════════════════
+//  PRODUCT DATA
+// ══════════════════════════════════════════════════
+const products = {
+  dior: [
+    { id: 'd1', name: 'Sauvage', type: 'Eau de Parfum', sizes: ['60ml','100ml','200ml'], sizePrices: {'60ml':14500,'100ml':19500,'200ml':28500}, emoji: '🌿', img: 'https://www.sephora.com/productimages/sku/s2038123-main-zoom.jpg' },
+    { id: 'd2', name: 'Sauvage Elixir', type: 'Parfum Concentré', sizes: ['60ml'], sizePrices: {'60ml':19500}, emoji: '🌙', img: 'https://www.sephora.com/productimages/sku/s2467454-main-zoom.jpg' },
+    { id: 'd3', name: 'Miss Dior', type: 'Eau de Parfum', sizes: ['50ml','100ml'], sizePrices: {'50ml':13800,'100ml':19200}, emoji: '🌸', img: 'https://www.sephora.com/productimages/sku/s2467371-main-zoom.jpg' },
+    { id: 'd4', name: "J'adore", type: 'Eau de Parfum', sizes: ['50ml','100ml','150ml'], sizePrices: {'50ml':15200,'100ml':21500,'150ml':28000}, emoji: '✨', img: 'https://cdn.fynd.com/v2/falling-surf-7c8bb8/fyprod/wrkr/products/pictures/item/free/resize-w:1024/000000000494285317/jq-WMgwLt-000000000494285317_1.jpg' },
+    { id: 'd5', name: 'Dior Homme Intense', type: 'Eau de Parfum', sizes: ['50ml','100ml'], sizePrices: {'50ml':12900,'100ml':18500}, emoji: '🖤', img: 'https://cdn.fynd.com/v2/falling-surf-7c8bb8/fyprod/wrkr/products/pictures/item/free/resize-w:1024/dior/68006006001/0/GCCI-vE0Mr-1_Product_183580-Dior-Dior-Homme-Intense-Eau-De-Parfum-100ml_bc2761719fdf9e98130b7636c8d661fbd1a51a6b_1555309256.png' },
+    { id: 'd6', name: 'Miss Dior Blooming', type: 'Eau de Toilette', sizes: ['30ml','75ml'], sizePrices: {'30ml':11800,'75ml':16500}, emoji: '🦋', img: 'https://cdn.fynd.com/v2/falling-surf-7c8bb8/fyprod/wrkr/products/pictures/item/free/resize-w:1024/dior/7015507/0/vpzJfV1Nr0-1_Product_192400-Dior-Miss-Dior-Blooming-Bouquet-Eau-De-Toilette-20ml_b7e90303eecf538120bec5912fd308678b744a0e_1555309352.png' },
+  ],
+  armani: [
+    { id: 'a1', name: 'Acqua di Giò', type: 'Eau de Toilette', sizes: ['40ml','75ml','125ml'], sizePrices: {'40ml':8200,'75ml':10200,'125ml':13900}, emoji: '🌊', img: 'https://belvish.com/cdn/shop/products/51A2WsUst8L._SL1063.jpg?v=1705596063' },
+    { id: 'a2', name: 'Acqua di Giò EDP', type: 'Eau de Parfum', sizes: ['75ml','125ml'], sizePrices: {'75ml':13500,'125ml':18200}, emoji: '💧', img: 'https://belvish.com/cdn/shop/files/Untitled-1_13_1.jpg?v=1742122390' },
+    { id: 'a3', name: 'Sì', type: 'Eau de Parfum', sizes: ['50ml','100ml'], sizePrices: {'50ml':11600,'100ml':16800}, emoji: '🌹', img: 'https://belvish.com/cdn/shop/files/giorgioarmanisiedpintenseforwommen_1.jpg?v=1748957795' },
+    { id: 'a4', name: 'My Way', type: 'Eau de Parfum', sizes: ['50ml','90ml'], sizePrices: {'50ml':10900,'90ml':15200}, emoji: '🌺', img: 'https://belvish.com/cdn/shop/products/New-Project-37.jpg?v=1705596410' },
+    { id: 'a5', name: 'Stronger With You', type: 'Eau de Parfum', sizes: ['50ml','100ml'], sizePrices: {'50ml':11200,'100ml':15800}, emoji: '🔥', img: 'https://belvish.com/cdn/shop/products/Intensely.jpg?v=1705595329' },
+    { id: 'a6', name: 'Acqua di Giò Profondo', type: 'Eau de Parfum', sizes: ['60ml','110ml'], sizePrices: {'60ml':12400,'110ml':17600}, emoji: '⚡', img: 'https://belvish.com/cdn/shop/files/Untitled-1_13_1.jpg?v=1742122390' },
+  ],
+  versace: [
+    { id: 'v1', name: 'Eros', type: 'Eau de Toilette', sizes: ['50ml','100ml','200ml'], sizePrices: {'50ml':8900,'100ml':12500,'200ml':18500}, emoji: '🏛️', img: 'https://belvish.com/cdn/shop/products/VersaceEros.jpg?v=1705606705&width=990' },
+    { id: 'v2', name: 'Eros Flame', type: 'Eau de Parfum', sizes: ['50ml','100ml'], sizePrices: {'50ml':10400,'100ml':14800}, emoji: '🔥', img: 'https://belvish.com/cdn/shop/products/1291342A-D73F-4E51-BF0E-9B52A230A613-e1582085644712.jpg?v=1705606691&width=600' },
+    { id: 'v3', name: 'Dylan Blue', type: 'Eau de Toilette', sizes: ['30ml','50ml','100ml'], sizePrices: {'30ml':5500,'50ml':8500,'100ml':12000}, emoji: '🌀', img: 'https://belvish.com/cdn/shop/files/versace_1_883e4abc-2f98-4749-b02f-d5a280800523.jpg?v=1759057549' },
+    { id: 'v4', name: 'Bright Crystal', type: 'Eau de Toilette', sizes: ['30ml','90ml'], sizePrices: {'30ml':7800,'90ml':13200}, emoji: '💎', img: 'https://belvish.com/cdn/shop/files/Versace_Bright_Crystal_parfum.webp?v=1746967768' },
+    { id: 'v5', name: 'Crystal Noir', type: 'Eau de Parfum', sizes: ['50ml','90ml'], sizePrices: {'50ml':9200,'90ml':14500}, emoji: '🖤', img: 'https://belvish.com/cdn/shop/files/Untitled-232_1.jpg?v=1729062179' },
+    { id: 'v6', name: 'Eros Najim', type: 'Parfum', sizes: ['50ml','100ml'], sizePrices: {'50ml':9800,'100ml':14200}, emoji: '🌊', img: 'https://belvish.com/cdn/shop/files/najim_1.jpg?v=1750415009' },
+  ],
+  creed: [
+    { id: 'c1', name: 'Aventus', type: 'Eau de Parfum', sizes: ['50ml','100ml','250ml'], sizePrices: {'50ml':28000,'100ml':38000,'250ml':72000}, emoji: '👑', img: 'https://belvish.com/cdn/shop/products/New-Project-2023-12-07T170343.506.jpg?v=1705593039' },
+    { id: 'c2', name: 'Green Irish Tweed', type: 'Eau de Parfum', sizes: ['50ml','100ml'], sizePrices: {'50ml':24500,'100ml':34500}, emoji: '🍀', img: 'https://belvish.com/cdn/shop/files/Creed-Green-Irish-Tweed-Eau-de-Parfum-100ml-EDP-Men-Main.webp?v=1733304723' },
+    { id: 'c3', name: 'Silver Mountain Water', type: 'Eau de Parfum', sizes: ['50ml','100ml'], sizePrices: {'50ml':22000,'100ml':32000}, emoji: '🏔️', img: 'https://belvish.com/cdn/shop/files/creed_2.jpg?v=1743156544' },
+    { id: 'c4', name: 'Viking', type: 'Eau de Parfum', sizes: ['50ml','100ml'], sizePrices: {'50ml':25500,'100ml':36000}, emoji: '⚔️', img: 'https://belvish.com/cdn/shop/products/creed-viking-edp-2-1.jpg?v=1705593223' },
+    { id: 'c5', name: 'Himalaya', type: 'Eau de Parfum', sizes: ['50ml','100ml'], sizePrices: {'50ml':23500,'100ml':33500}, emoji: '🏔️', img: 'https://belvish.com/cdn/shop/files/creedhimalayaedpformen_1.jpg?v=1744965451' },
+    { id: 'c6', name: 'Millesime Imperial', type: 'Eau de Parfum', sizes: ['50ml','100ml','250ml'], sizePrices: {'50ml':24000,'100ml':35000,'250ml':66000}, emoji: '🌊', img: 'https://belvish.com/cdn/shop/products/Creed-Millesime-Imperial-EDP-1.jpg?v=1705593115' },
+  ],
+  'jo-malone': [
+    { id: 'j1', name: 'Wood Sage & Sea Salt', type: 'Cologne', sizes: ['30ml','100ml','175ml'], sizePrices: {'30ml':7200,'100ml':14800,'175ml':22000}, emoji: '🌿', img: 'https://belvish.com/cdn/shop/files/sea.jpg?v=1769349671' },
+    { id: 'j2', name: 'Peony & Blush Suede', type: 'Cologne', sizes: ['30ml','100ml'], sizePrices: {'30ml':7500,'100ml':15200}, emoji: '🌸', img: 'https://cdn.fynd.com/v2/falling-surf-7c8bb8/fyprod/wrkr/products/pictures/item/free/resize-w:1024/000000000494238480/qFkzvmgl5-000000000494238480_1.jpg' },
+    { id: 'j3', name: 'Lime Basil & Mandarin', type: 'Cologne', sizes: ['30ml','100ml','175ml'], sizePrices: {'30ml':6800,'100ml':13900,'175ml':20500}, emoji: '🍋', img: 'https://cdn.fynd.com/v2/falling-surf-7c8bb8/fyprod/wrkr/products/pictures/item/free/resize-w:1024/000000000494238479/TXoDl0J5w-000000000494238479_1.jpg' },
+    { id: 'j4', name: 'English Pear & Freesia', type: 'Cologne', sizes: ['30ml','100ml'], sizePrices: {'30ml':7000,'100ml':14200}, emoji: '🍐', img: 'https://cdn.fynd.com/v2/falling-surf-7c8bb8/fyprod/wrkr/products/pictures/item/free/resize-w:1024/000000000494238478/-Sk7KjbWcaN-000000000494238478_1.jpg' },
+    { id: 'j5', name: 'Myrrh & Tonka', type: 'Cologne Intense', sizes: ['50ml','100ml'], sizePrices: {'50ml':11500,'100ml':17500}, emoji: '✨', img: 'https://cdn.fynd.com/v2/falling-surf-7c8bb8/fyprod/wrkr/products/pictures/item/free/resize-w:1024/000000000493682057/VchdUS20vLM-000000000493682057_1.jpg' },
+    { id: 'j6', name: 'Velvet Rose & Oud', type: 'Cologne Intense', sizes: ['50ml','100ml'], sizePrices: {'50ml':12000,'100ml':18200}, emoji: '🌹', img: 'https://cdn.fynd.com/v2/falling-surf-7c8bb8/fyprod/wrkr/products/pictures/item/free/resize-w:1024/000000000493682081/fpUG5n8150m-000000000493682081_1.jpg' },
+  ],
+  'parfums-de-marly': [
+    { id: 'p1', name: 'Layton', type: 'Eau de Parfum', sizes: ['75ml','125ml'], sizePrices: {'75ml':28500,'125ml':38500}, emoji: '👑', img: 'https://belvish.com/cdn/shop/products/LaytonExclusif.jpg?v=1705609404&width=990' },
+    { id: 'p2', name: 'Percival', type: 'Eau de Parfum', sizes: ['75ml','125ml'], sizePrices: {'75ml':27000,'125ml':36500}, emoji: '🌸', img: 'https://www.fridaycharm.com/cdn/shop/products/percival_1800x1800_8ec92f6c-40ba-4db2-8ee7-2b6b26e9c66d.jpg?v=1698494707&width=1080' },
+    { id: 'p3', name: 'Herod', type: 'Eau de Parfum', sizes: ['75ml','125ml'], sizePrices: {'75ml':26500,'125ml':35800}, emoji: '🖤', img: 'https://belvish.com/cdn/shop/products/Herod-1-e1623763157742.jpg?v=1705609494&width=990' },
+    { id: 'p4', name: 'Sedley', type: 'Eau de Parfum', sizes: ['75ml'], sizePrices: {'75ml':27500}, emoji: '🌿', img: 'https://belvish.com/cdn/shop/products/PDM-Sedley-e1630486285326.jpg?v=1705609317&width=1346' },
+    { id: 'p5', name: 'Delina', type: 'Eau de Parfum', sizes: ['75ml','125ml'], sizePrices: {'75ml':28000,'125ml':38000}, emoji: '🌺', img: 'https://belvish.com/cdn/shop/files/ParfumsdeMarlyDelinaLaRosee.jpg?v=1775225579' },
+    { id: 'p6', name: 'Cassili', type: 'Eau de Parfum', sizes: ['75ml','125ml'], sizePrices: {'75ml':26000,'125ml':35000}, emoji: '🦋', img: 'https://belvish.com/cdn/shop/files/cassili_1.jpg?v=1755945763&width=990' },
+  ]
+};
+
+// helper – get active price for a product given a size
+function getPrice(product, size) {
+  return product.sizePrices[size] || Object.values(product.sizePrices)[0];
+}
+
+const brandNames = {
+  dior: 'Dior',
+  armani: 'Armani',
+  versace: 'Versace',
+  creed: 'Creed',
+  'jo-malone': 'Jo Malone',
+  'parfums-de-marly': 'Parfums de Marly'
+};
+
+// ══════════════════════════════════════════════════
+//  CART STATE  — persisted to localStorage
+// ══════════════════════════════════════════════════
+let cart = JSON.parse(localStorage.getItem('fragasm_cart') || '[]');
+
+function saveCart() {
+  localStorage.setItem('fragasm_cart', JSON.stringify(cart));
+}
+
+function formatPrice(p) {
+  return '₹' + p.toLocaleString('en-IN');
+}
+
+// ══════════════════════════════════════════════════
+//  RENDER PRODUCTS
+// ══════════════════════════════════════════════════
+function renderProducts() {
+  Object.entries(products).forEach(([brand, items]) => {
+    const grid = document.getElementById('grid-' + brand);
+    if (!grid) return;
+    grid.innerHTML = items.map(product => {
+      const defaultSize = product.sizes[0];
+      const defaultPrice = getPrice(product, defaultSize);
+      return `
+      <div class="product-card">
+        <div class="product-img-wrap" style="cursor:pointer" onclick="openDetail('${brand}','${product.id}',${items.indexOf(product)})">
+          <div class="product-img-placeholder" id="placeholder-${product.id}">
+            <img
+              src="${product.img}"
+              alt="${product.name}"
+              class="product-real-img"
+              onload="this.parentElement.classList.add('img-loaded')"
+              onerror="this.style.display='none'; document.getElementById('fallback-${product.id}').style.display='flex'"
+            />
+            <div class="bottle-icon" id="fallback-${product.id}" style="display:none">${product.emoji}</div>
+          </div>
+          <div class="product-brand-badge">${brandNames[brand]}</div>
+         
+        </div>
+        <div class="product-info">
+          <div class="product-name" style="cursor:pointer" onclick="openDetail('${brand}','${product.id}',${items.indexOf(product)})">${product.name}</div>
+          <div class="product-type">${product.type}</div>
+          <div class="size-selector">
+            ${product.sizes.map((s, i) => `<div class="size-opt${i===0?' active':''}" onclick="selectSize(this,'${product.id}','${brand}',${items.indexOf(product)})">${s}</div>`).join('')}
+          </div>
+          <div class="product-footer">
+            <div class="product-price" id="price-${product.id}">${formatPrice(defaultPrice)}</div>
+            <button class="add-cart-btn" id="btn-${product.id}" onclick="addToCart('${brand}','${product.id}',${items.indexOf(product)})">Add to Cart</button>
+          </div>
+        </div>
+      </div>
+    `}).join('');
+  });
+}
+
+function selectSize(el, productId, brand, idx) {
+  const wrap = el.closest('.size-selector');
+  wrap.querySelectorAll('.size-opt').forEach(s => s.classList.remove('active'));
+  el.classList.add('active');
+  // Update displayed price
+  const product = products[brand][idx];
+  const size = el.textContent.trim();
+  const price = getPrice(product, size);
+  const priceEl = document.getElementById('price-' + productId);
+  if (priceEl) priceEl.textContent = formatPrice(price);
+}
+
+// ══════════════════════════════════════════════════
+//  CART LOGIC
+// ══════════════════════════════════════════════════
+function addToCart(brand, productId, idx) {
+  const product = products[brand][idx];
+  const sizeEl = document.querySelector(`#btn-${productId}`)?.closest('.product-info')?.querySelector('.size-opt.active');
+  const size = sizeEl ? sizeEl.textContent.trim() : product.sizes[0];
+  const price = getPrice(product, size);
+
+  const existing = cart.find(i => i.id === productId && i.size === size);
+  if (existing) {
+    existing.qty++;
+  } else {
+    cart.push({ ...product, price, brand, brandName: brandNames[brand], size, qty: 1 });
+  }
+
+  saveCart();
+  updateCartUI();
+  flashBtn(productId);
+  showToast(`${product.name} (${size}) added to cart`);
+}
+
+function removeFromCart(productId, size) {
+  cart = cart.filter(i => !(i.id === productId && i.size === size));
+  saveCart();
+  updateCartUI();
+}
+
+function changeQty(productId, size, delta) {
+  const item = cart.find(i => i.id === productId && i.size === size);
+  if (!item) return;
+  item.qty += delta;
+  if (item.qty <= 0) cart = cart.filter(i => !(i.id === productId && i.size === size));
+  saveCart();
+  updateCartUI();
+}
+
+function updateCartUI() {
+  const total = cart.reduce((s, i) => s + i.price * i.qty, 0);
+  const count = cart.reduce((s, i) => s + i.qty, 0);
+
+  // count badge
+  const badge = document.getElementById('cart-count');
+  badge.textContent = count;
+  badge.classList.remove('bump');
+  void badge.offsetWidth;
+  badge.classList.add('bump');
+
+  // total
+  document.getElementById('cart-total').textContent = formatPrice(total);
+
+  // body
+  const body = document.getElementById('cart-body');
+  if (cart.length === 0) {
+    body.innerHTML = `
+      <div class="cart-empty">
+        <div class="cart-empty-icon">🧴</div>
+        <div class="cart-empty-text">Your cart is empty</div>
+        <div class="cart-empty-sub">Add a fragrance to begin</div>
+      </div>`;
+    return;
+  }
+
+  body.innerHTML = cart.map(item => `
+    <div class="cart-item">
+      <div class="cart-item-img">
+        <img src="${item.img}" alt="${item.name}" style="width:100%;height:100%;object-fit:cover;" onerror="this.style.display='none';this.parentElement.textContent='${item.emoji}'">
+      </div>
+      <div class="cart-item-info">
+        <div class="cart-item-brand">${item.brandName}</div>
+        <div class="cart-item-name">${item.name}</div>
+        <div class="cart-item-size">${item.type} · ${item.size}</div>
+        <div class="cart-item-row">
+          <button class="qty-btn" onclick="changeQty('${item.id}','${item.size}',-1)">−</button>
+          <span class="qty-val">${item.qty}</span>
+          <button class="qty-btn" onclick="changeQty('${item.id}','${item.size}',1)">+</button>
+          <span class="cart-item-price">${formatPrice(item.price * item.qty)}</span>
+          <button class="remove-btn" onclick="removeFromCart('${item.id}','${item.size}')">Remove</button>
+        </div>
+      </div>
+    </div>
+  `).join('');
+}
+
+function openCart() {
+  document.getElementById('cart-sidebar').classList.add('open');
+  document.getElementById('cart-overlay').classList.add('open');
+  document.body.style.overflow = 'hidden';
+}
+
+function closeCart() {
+  document.getElementById('cart-sidebar').classList.remove('open');
+  document.getElementById('cart-overlay').classList.remove('open');
+  document.body.style.overflow = '';
+}
+
+function openCheckout() {
+  if (cart.length === 0) { showToast('Your cart is empty'); return; }
+  closeCart();
+  // populate summary
+  const total = cart.reduce((s, i) => s + i.price * i.qty, 0);
+  const shipping = total > 5000 ? 0 : 299;
+  document.getElementById('checkout-summary').innerHTML = `
+    ${cart.map(i => `
+      <div class="checkout-summary-row">
+        <span>${i.name} (${i.size}) × ${i.qty}</span>
+        <span>${formatPrice(i.price * i.qty)}</span>
+      </div>
+    `).join('')}
+    <div class="checkout-summary-row">
+      <span>Shipping</span>
+      <span>${shipping === 0 ? 'Free' : formatPrice(shipping)}</span>
+    </div>
+    <div class="checkout-summary-row total">
+      <span>Total</span>
+      <span>${formatPrice(total + shipping)}</span>
+    </div>
+  `;
+  document.getElementById('order-success').classList.remove('show');
+  document.getElementById('checkout-form-wrap').style.display = '';
+  document.getElementById('checkout-overlay').classList.add('open');
+  document.body.style.overflow = 'hidden';
+}
+
+function closeCheckout() {
+  document.getElementById('checkout-overlay').classList.remove('open');
+  document.body.style.overflow = '';
+}
+
+function closeAll() {
+  closeCheckout();
+  closeCart();
+}
+
+function flashBtn(productId) {
+  const btn = document.getElementById('btn-' + productId);
+  if (!btn) return;
+  btn.textContent = 'Added ✓';
+  btn.classList.add('added');
+  setTimeout(() => {
+    btn.textContent = 'Add to Cart';
+    btn.classList.remove('added');
+  }, 1800);
+}
+
+function showToast(msg) {
+  const t = document.getElementById('toast');
+  document.getElementById('toast-msg').textContent = msg;
+  t.classList.add('show');
+  setTimeout(() => t.classList.remove('show'), 2500);
+}
+
+// ══════════════════════════════════════════════════
+//  NAV SCROLL EFFECT
+// ══════════════════════════════════════════════════
+window.addEventListener('scroll', () => {
+  document.getElementById('navbar').classList.toggle('scrolled', window.scrollY > 60);
+});
+
+// ══════════════════════════════════════════════════
+//  INIT
+// ══════════════════════════════════════════════════
+// ══════════════════════════════════════════════════
+//  AUTH SYSTEM
+// ══════════════════════════════════════════════════
+let currentUser = null;
+
+// Load persisted user from sessionStorage
+(function initAuth() {
+  const saved = sessionStorage.getItem('fragasm_user');
+  if (saved) {
+    currentUser = JSON.parse(saved);
+    applyLoggedInState();
+  }
+})();
+
+function openLogin() {
+  document.getElementById('login-overlay').classList.add('open');
+  document.body.style.overflow = 'hidden';
+}
+function closeLogin() {
+  document.getElementById('login-overlay').classList.remove('open');
+  document.body.style.overflow = '';
+  // clear errors
+  document.getElementById('signin-error').classList.remove('show');
+  document.getElementById('signup-error').classList.remove('show');
+  document.getElementById('signup-success').classList.remove('show');
+}
+
+function switchLoginTab(tab) {
+  document.getElementById('form-signin').classList.toggle('active', tab === 'signin');
+  document.getElementById('form-signup').classList.toggle('active', tab === 'signup');
+  document.getElementById('tab-signin').classList.toggle('active', tab === 'signin');
+  document.getElementById('tab-signup').classList.toggle('active', tab === 'signup');
+}
+
+function handleSignIn() {
+  const email = document.getElementById('signin-email').value.trim();
+  const pass  = document.getElementById('signin-password').value;
+  const errEl = document.getElementById('signin-error');
+
+  if (!email || !pass) { errEl.textContent = 'Please enter your email and password.'; errEl.classList.add('show'); return; }
+
+  // Check if account exists in sessionStorage
+  const accounts = JSON.parse(sessionStorage.getItem('fragasm_accounts') || '{}');
+  if (accounts[email] && accounts[email].password === pass) {
+    currentUser = { ...accounts[email] };
+    delete currentUser.password;
+    sessionStorage.setItem('fragasm_user', JSON.stringify(currentUser));
+    errEl.classList.remove('show');
+    closeLogin();
+    applyLoggedInState();
+    showToast(`Welcome back, ${currentUser.firstName}!`);
+  } else {
+    errEl.textContent = 'Invalid email or password. Please try again.';
+    errEl.classList.add('show');
+  }
+}
+
+function handleSignUp() {
+  const fname = document.getElementById('signup-fname').value.trim();
+  const lname = document.getElementById('signup-lname').value.trim();
+  const email = document.getElementById('signup-email').value.trim();
+  const phone = document.getElementById('signup-phone').value.trim();
+  const pass  = document.getElementById('signup-password').value;
+  const errEl = document.getElementById('signup-error');
+  const sucEl = document.getElementById('signup-success');
+
+  if (!fname || !lname || !email || !pass) {
+    errEl.textContent = 'Please fill in all required fields.'; errEl.classList.add('show'); return;
+  }
+  if (pass.length < 6) {
+    errEl.textContent = 'Password must be at least 6 characters.'; errEl.classList.add('show'); return;
+  }
+
+  const accounts = JSON.parse(sessionStorage.getItem('fragasm_accounts') || '{}');
+  if (accounts[email]) {
+    errEl.textContent = 'An account with this email already exists.'; errEl.classList.add('show'); return;
+  }
+
+  // Save account
+  accounts[email] = { firstName: fname, lastName: lname, email, phone, password: pass, joined: new Date().toLocaleDateString('en-IN', { month: 'long', year: 'numeric' }) };
+  sessionStorage.setItem('fragasm_accounts', JSON.stringify(accounts));
+
+  currentUser = { firstName: fname, lastName: lname, email, phone, joined: accounts[email].joined };
+  sessionStorage.setItem('fragasm_user', JSON.stringify(currentUser));
+
+  errEl.classList.remove('show');
+  sucEl.classList.add('show');
+  setTimeout(() => { sucEl.classList.remove('show'); closeLogin(); applyLoggedInState(); showToast(`Welcome to FRAGASM, ${fname}!`); }, 1500);
+}
+
+function handleSocialLogin(provider) {
+  // Simulate social login with a demo account
+  currentUser = { firstName: 'Guest', lastName: 'User', email: `guest@${provider.toLowerCase()}.com`, phone: '', joined: new Date().toLocaleDateString('en-IN', { month: 'long', year: 'numeric' }) };
+  sessionStorage.setItem('fragasm_user', JSON.stringify(currentUser));
+  closeLogin();
+  applyLoggedInState();
+  showToast(`Signed in with ${provider}`);
+}
+
+function applyLoggedInState() {
+  if (!currentUser) return;
+  const initials = (currentUser.firstName[0] + (currentUser.lastName[0] || '')).toUpperCase();
+  document.getElementById('login-nav-btn').style.display = 'none';
+  document.getElementById('user-menu-wrap').style.display = 'block';
+  document.getElementById('user-avatar-btn').textContent = initials;
+  document.getElementById('dropdown-name').textContent = currentUser.firstName + ' ' + currentUser.lastName;
+  document.getElementById('dropdown-email').textContent = currentUser.email;
+}
+
+function logoutUser() {
+  currentUser = null;
+  sessionStorage.removeItem('fragasm_user');
+  document.getElementById('login-nav-btn').style.display = 'flex';
+  document.getElementById('user-menu-wrap').style.display = 'none';
+  showToast('You have been signed out');
+}
+
+function toggleDropdown() {
+  document.getElementById('user-dropdown').classList.toggle('open');
+}
+function closeDropdown() {
+  document.getElementById('user-dropdown').classList.remove('open');
+}
+// Close dropdown on outside click
+document.addEventListener('click', e => {
+  const wrap = document.getElementById('user-menu-wrap');
+  if (wrap && !wrap.contains(e.target)) closeDropdown();
+});
+
+// ══════════════════════════════════════════════════
+//  PROFILE PANEL
+// ══════════════════════════════════════════════════
+let currentProfileTab = 'account';
+
+function openProfile(tab = 'account') {
+  if (!currentUser) { openLogin(); return; }
+  document.getElementById('profile-overlay').classList.add('open');
+  document.getElementById('profile-panel').classList.add('open');
+  document.body.style.overflow = 'hidden';
+  switchProfileTab(tab);
+}
+function closeProfile() {
+  document.getElementById('profile-overlay').classList.remove('open');
+  document.getElementById('profile-panel').classList.remove('open');
+  document.body.style.overflow = '';
+}
+
+function switchProfileTab(tab) {
+  currentProfileTab = tab;
+  ['account','orders','settings'].forEach(t => {
+    document.getElementById('ptab-' + t).classList.toggle('active', t === tab);
+  });
+  const titles = { account: 'My Profile', orders: 'My Orders', settings: 'Settings' };
+  document.getElementById('profile-panel-title').textContent = titles[tab];
+  renderProfileContent(tab);
+}
+
+function renderProfileContent(tab) {
+  const body = document.getElementById('profile-body');
+  if (tab === 'account') {
+    const u = currentUser;
+    body.innerHTML = `
+      <div class="profile-avatar-section">
+        <div class="profile-avatar-large">${(u.firstName[0]+(u.lastName[0]||'')).toUpperCase()}</div>
+        <div class="profile-avatar-info">
+          <div class="profile-avatar-name">${u.firstName} ${u.lastName}</div>
+          <div class="profile-avatar-email">${u.email}</div>
+          <div class="profile-avatar-badge">✦ Fragasm Member · Since ${u.joined || 'Recently'}</div>
+        </div>
+      </div>
+
+      <div class="profile-section-title">Personal Details</div>
+      <div class="profile-field-grid" id="account-fields">
+        <div>
+          <span class="profile-field-label">First Name</span>
+          <div class="profile-field-value" id="pf-fname">${u.firstName}</div>
+        </div>
+        <div>
+          <span class="profile-field-label">Last Name</span>
+          <div class="profile-field-value" id="pf-lname">${u.lastName}</div>
+        </div>
+        <div>
+          <span class="profile-field-label">Email Address</span>
+          <div class="profile-field-value" id="pf-email">${u.email}</div>
+        </div>
+        <div>
+          <span class="profile-field-label">Phone Number</span>
+          <div class="profile-field-value" id="pf-phone">${u.phone || '—'}</div>
+        </div>
+      </div>
+      <button class="profile-edit-btn" id="edit-profile-btn" onclick="enableProfileEdit()">Edit Details</button>
+
+      <div class="profile-section-title" style="margin-top:32px">Shipping Address</div>
+      <div class="profile-field-grid">
+        <div style="grid-column: 1/-1">
+          <span class="profile-field-label">Saved Address</span>
+          <div class="profile-field-value">${u.address || 'No address saved yet'}</div>
+        </div>
+      </div>
+      <button class="profile-edit-btn" onclick="enableAddressEdit()">Add / Edit Address</button>
+    `;
+  } else if (tab === 'orders') {
+    // Demo orders - in real app these would be stored
+    const orders = JSON.parse(sessionStorage.getItem('fragasm_orders_' + currentUser.email) || '[]');
+    body.innerHTML = `
+      <div class="profile-section-title">Order History</div>
+      ${orders.length === 0 ? `
+        <div style="text-align:center;padding:60px 20px;color:var(--text-muted)">
+          <div style="font-size:2.5rem;margin-bottom:16px;opacity:0.3">📦</div>
+          <div style="font-family:'Cormorant Garamond',serif;font-size:1.4rem;color:var(--cream);margin-bottom:8px">No orders yet</div>
+          <div style="font-size:0.65rem;letter-spacing:0.15em;text-transform:uppercase">Your purchases will appear here</div>
+        </div>
+      ` : orders.map(o => `
+        <div class="order-card">
+          <div class="order-card-head">
+            <span class="order-id">ORDER #${o.id}</span>
+            <span class="order-date">${o.date}</span>
+            <span class="order-status ${o.status.toLowerCase()}">${o.status}</span>
+          </div>
+          <div class="order-items">${o.items}</div>
+          <div class="order-total">${o.total}</div>
+        </div>
+      `).join('')}
+    `;
+  } else if (tab === 'settings') {
+    body.innerHTML = `
+      <div class="settings-group">
+        <div class="settings-group-title">Notifications</div>
+        <div class="settings-row">
+          <div class="settings-row-left">
+            <div class="settings-row-label">Order Updates</div>
+            <div class="settings-row-desc">Get notified about your order status</div>
+          </div>
+          <label class="toggle"><input type="checkbox" checked><span class="toggle-slider"></span></label>
+        </div>
+        <div class="settings-row">
+          <div class="settings-row-left">
+            <div class="settings-row-label">New Arrivals</div>
+            <div class="settings-row-desc">Be the first to know about new fragrances</div>
+          </div>
+          <label class="toggle"><input type="checkbox" checked><span class="toggle-slider"></span></label>
+        </div>
+        <div class="settings-row">
+          <div class="settings-row-left">
+            <div class="settings-row-label">Exclusive Offers</div>
+            <div class="settings-row-desc">Receive personalised deals and promotions</div>
+          </div>
+          <label class="toggle"><input type="checkbox"><span class="toggle-slider"></span></label>
+        </div>
+        <div class="settings-row">
+          <div class="settings-row-left">
+            <div class="settings-row-label">Wishlist Reminders</div>
+            <div class="settings-row-desc">Alerts when wishlist items go on sale</div>
+          </div>
+          <label class="toggle"><input type="checkbox"><span class="toggle-slider"></span></label>
+        </div>
+      </div>
+
+      <div class="settings-group">
+        <div class="settings-group-title">Privacy</div>
+        <div class="settings-row">
+          <div class="settings-row-left">
+            <div class="settings-row-label">Save Browsing History</div>
+            <div class="settings-row-desc">Used to personalise recommendations</div>
+          </div>
+          <label class="toggle"><input type="checkbox" checked><span class="toggle-slider"></span></label>
+        </div>
+        <div class="settings-row">
+          <div class="settings-row-left">
+            <div class="settings-row-label">Analytics Cookies</div>
+            <div class="settings-row-desc">Help us improve your experience</div>
+          </div>
+          <label class="toggle"><input type="checkbox" checked><span class="toggle-slider"></span></label>
+        </div>
+      </div>
+
+      <div class="settings-group">
+        <div class="settings-group-title">Security</div>
+        <div class="settings-row">
+          <div class="settings-row-left">
+            <div class="settings-row-label">Change Password</div>
+            <div class="settings-row-desc">Update your account password</div>
+          </div>
+          <button class="profile-edit-btn" style="margin:0" onclick="showToast('Password reset email sent!')">Change</button>
+        </div>
+        <div class="settings-row">
+          <div class="settings-row-left">
+            <div class="settings-row-label">Two-Factor Authentication</div>
+            <div class="settings-row-desc">Add an extra layer of security</div>
+          </div>
+          <label class="toggle"><input type="checkbox"><span class="toggle-slider"></span></label>
+        </div>
+      </div>
+
+      <div class="settings-group">
+        <div class="settings-group-title">Account Actions</div>
+        <div class="settings-danger-zone">
+          <div class="settings-danger-title">⚠ Danger Zone</div>
+          <button class="danger-btn" onclick="if(confirm('Sign out of FRAGASM?')) { closeProfile(); logoutUser(); }">Sign Out</button>
+          <button class="danger-btn" onclick="showToast('Account deletion request submitted')">Delete Account</button>
+        </div>
+      </div>
+    `;
+  }
+}
+
+function enableProfileEdit() {
+  const u = currentUser;
+  document.getElementById('account-fields').innerHTML = `
+    <div>
+      <label class="profile-field-label">First Name</label>
+      <input class="form-input" id="edit-fname" value="${u.firstName}">
+    </div>
+    <div>
+      <label class="profile-field-label">Last Name</label>
+      <input class="form-input" id="edit-lname" value="${u.lastName}">
+    </div>
+    <div>
+      <label class="profile-field-label">Email Address</label>
+      <input class="form-input" id="edit-email" value="${u.email}">
+    </div>
+    <div>
+      <label class="profile-field-label">Phone Number</label>
+      <input class="form-input" id="edit-phone" value="${u.phone || ''}">
+    </div>
+  `;
+  document.getElementById('edit-profile-btn').outerHTML = `<button class="profile-save-btn" onclick="saveProfileEdit()">Save Changes</button>`;
+}
+
+function enableAddressEdit() {
+  const u = currentUser;
+  const existing = u.address || '';
+  showToast('Address editing coming soon!');
+}
+
+function saveProfileEdit() {
+  const fname = document.getElementById('edit-fname')?.value.trim();
+  const lname = document.getElementById('edit-lname')?.value.trim();
+  const email = document.getElementById('edit-email')?.value.trim();
+  const phone = document.getElementById('edit-phone')?.value.trim();
+  if (!fname || !email) { showToast('Name and email are required'); return; }
+  currentUser = { ...currentUser, firstName: fname, lastName: lname, email, phone };
+  sessionStorage.setItem('fragasm_user', JSON.stringify(currentUser));
+  // Update accounts store too
+  const accounts = JSON.parse(sessionStorage.getItem('fragasm_accounts') || '{}');
+  if (accounts[email]) { accounts[email] = { ...accounts[email], firstName: fname, lastName: lname, phone }; }
+  sessionStorage.setItem('fragasm_accounts', JSON.stringify(accounts));
+  applyLoggedInState();
+  switchProfileTab('account');
+  showToast('Profile updated successfully!');
+}
+
+// Save order to profile after checkout
+function placeOrder() {
+  if (cart.length === 0) return;
+  // Save order if logged in
+  if (currentUser) {
+    const orders = JSON.parse(sessionStorage.getItem('fragasm_orders_' + currentUser.email) || '[]');
+    const total = cart.reduce((s, i) => s + i.price * i.qty, 0);
+    orders.unshift({
+      id: Math.floor(100000 + Math.random() * 900000),
+      date: new Date().toLocaleDateString('en-IN', { day: 'numeric', month: 'short', year: 'numeric' }),
+      status: 'Processing',
+      items: cart.map(i => `${i.name} (${i.size}) ×${i.qty}`).join(', '),
+      total: '₹' + total.toLocaleString('en-IN')
+    });
+    sessionStorage.setItem('fragasm_orders_' + currentUser.email, JSON.stringify(orders));
+  }
+  document.getElementById('checkout-form-wrap').style.display = 'none';
+  document.getElementById('order-success').classList.add('show');
+  cart = [];
+  saveCart();
+  updateCartUI();
+}
+
+// ══════════════════════════════════════════════════
+//  PRODUCT DETAIL DATA
+// ══════════════════════════════════════════════════
+const productDetails = {
+  d1: { seasons: ['Fall','Winter','Spring'], description: "Dior Sauvage EDP is an act of creation inspired by wide-open spaces. A powerful, magnetic composition — bergamot and ambery vanilla intertwine with subtle smokiness to create an endlessly lasting trail. Radically fresh yet deeply sensual.", topNotes: ['Calabrian Bergamot','Sichuan Pepper','Lavender'], midNotes: ['Star Anise','Nutmeg','Ambroxan'], baseNotes: ['Papua Vanilla','Patchouli','Vetiver'], sillage: 85, longevity: 90, versatility: 88, rating: 4.8 },
+  d2: { seasons: ['Fall','Winter'], description: "Sauvage Elixir is an extraordinarily concentrated fragrance — raw, intoxicating and captivating. Steeped in freshness with a spiced heart of cinnamon, nutmeg and cardamom, and a base of rich woods. A fragrance for the bold.", topNotes: ['Grapefruit','Nutmeg','Cinnamon'], midNotes: ['Cardamom','Lavender','Licorice'], baseNotes: ['Sandalwood','Amber','Hawthorn'], sillage: 95, longevity: 96, versatility: 62, rating: 4.9 },
+  d3: { seasons: ['Spring','Summer'], description: "Miss Dior EDP is a bouquet of lively flowers — a velvet heart of Centifolia rose embroidered with lily-of-the-valley, peony and iris. Warm vanilla and tonka bean create a sensual, long-lasting trail of pure femininity.", topNotes: ['Calabrian Bergamot','Blood Orange'], midNotes: ['Centifolia Rose','Peony','Lily of the Valley'], baseNotes: ['Vanilla','Tonka Bean','Sandalwood'], sillage: 78, longevity: 82, versatility: 80, rating: 4.7 },
+  d4: { seasons: ['Spring','Summer','Fall'], description: "J'adore is a dream flower: dewy, fruity, velvety. A mosaic of the world's most precious flowers — ylang-ylang, jasmine, Damascena rose — conversing in perfect harmony. Iconic, golden, unforgettable.", topNotes: ['Pear','Mandarin','Champagne Accord'], midNotes: ['Damascus Rose','Sambac Jasmine','Ylang-Ylang'], baseNotes: ['Blackberry Musk','Cedar','Sandalwood'], sillage: 80, longevity: 85, versatility: 82, rating: 4.6 },
+  d5: { seasons: ['Fall','Winter'], description: "Dior Homme Intense is a deeply refined, masculine fragrance — a tender and dark iris accord on a foundation of warm sensuality. Powdery florals evolve into rich amber and leather for a truly distinctive trail.", topNotes: ['Lavender','Iris','Bergamot'], midNotes: ['Iris Pallida','Vetiver','Cardamom'], baseNotes: ['Tonka Bean','Amber','Cashmere'], sillage: 80, longevity: 87, versatility: 70, rating: 4.7 },
+  d6: { seasons: ['Spring','Summer'], description: "Miss Dior Blooming Bouquet is an irresistibly charming, sheer floral whirlwind — playful bergamot lifts pastel peony and Damascus rose, while cottony musks and cedarwood leave a beautiful second-skin trail.", topNotes: ['Bergamot','Sicilian Mandarin'], midNotes: ['Peony','Damascus Rose','Lychee'], baseNotes: ['White Musk','Cedar'], sillage: 68, longevity: 70, versatility: 75, rating: 4.5 },
+
+  a1: { seasons: ['Spring','Summer'], description: "Acqua di Giò EDT is a timeless hymn to the sea — the scent of a Mediterranean island. Transparent, aromatic and woody, it blends marine freshness with fruit and herbs for a modern, confident masculinity.", topNotes: ['Bergamot','Mandarin','Neroli'], midNotes: ['Rosemary','Jasmine','Persimmon'], baseNotes: ['Patchouli','Musk','Cedar'], sillage: 75, longevity: 78, versatility: 85, rating: 4.5 },
+  a2: { seasons: ['Spring','Summer','Fall'], description: "Acqua di Giò EDP deepens the iconic marine freshness with a mineral volcanic accord and rich amber wood undertones. Sustainable luxury, refillable elegance — nature's power captured in a bottle.", topNotes: ['Green Mandarin','Sage','Rosemary'], midNotes: ['Marine Notes','Cypress','Geranium'], baseNotes: ['Musk','Mineral Accord','Incense'], sillage: 82, longevity: 85, versatility: 83, rating: 4.6 },
+  a3: { seasons: ['Spring','Summer'], description: "Sì is a declaration — an ode to freedom. The sparkling Bergamot freshness reveals a floral heart of neroli and rose, while Blackcurrant Nectar and Vanilla Bourbon create a warm, empowering and lasting feminine signature.", topNotes: ['Blackcurrant Nectar','Bergamot'], midNotes: ['Neroli','Rose','Freesia'], baseNotes: ['Patchouli','Vanilla Bourbon','Amberwood'], sillage: 78, longevity: 80, versatility: 78, rating: 4.6 },
+  a4: { seasons: ['Spring','Summer','Fall'], description: "My Way is a fragrance that says yes to life — an invitation to travel. Tuberose and Orange Blossom soar with a woody White Musks base. Optimistic, free, and luminously feminine.", topNotes: ['Bergamot','Orange Blossom','Cardamom'], midNotes: ['Tuberose','Egyptian Jasmine','Indian Jasmine'], baseNotes: ['White Musks','Virginia Cedar','Sandalwood'], sillage: 76, longevity: 79, versatility: 80, rating: 4.5 },
+  a5: { seasons: ['Fall','Winter'], description: "Stronger With You Intensely is a bold, dark and seductive evolution — Violet and Sage rest on a foundation of Black Vanilla and Toffee. Powerful, confident, impossible to forget.", topNotes: ['Pink Pepper','Violet','Sage'], midNotes: ['Cinnamon','Chestnut','Lavender'], baseNotes: ['Black Vanilla','Toffee','Sandalwood'], sillage: 87, longevity: 89, versatility: 70, rating: 4.7 },
+  a6: { seasons: ['Spring','Summer','Fall'], description: "Acqua di Giò Profondo dives into the unknown depths of the sea — a long-lasting masculine cologne with addictive cypress, lavender, and rosemary rounded by patchouli and mineral musk accords.", topNotes: ['Marine Notes','Aquatic Notes','Bergamot'], midNotes: ['Cypress','Lavender','Rosemary'], baseNotes: ['Patchouli','Mineral Musk','Oakmoss'], sillage: 83, longevity: 86, versatility: 82, rating: 4.6 },
+
+  v1: { seasons: ['Spring','Summer'], description: "Versace Eros EDT captures love, passion and desire through the eyes of the God of Love. Fresh mint, Italian lemon and green apple ignite with vanilla and tonka beans for a luminous, virile trail.", topNotes: ['Fresh Mint','Italian Lemon','Green Apple'], midNotes: ['Geranium','Ambroxan','Tonka Beans'], baseNotes: ['Oakmoss','Cedar','Vetiver'], sillage: 82, longevity: 80, versatility: 78, rating: 4.5 },
+  v2: { seasons: ['Fall','Winter'], description: "Eros Flame is a hesperidic, amber and woody masterpiece — Italian lemon ignites pepperwood and Clary Sage before settling into a warm, seductive base of vetiver and sandalwood. Passionate and self-confident.", topNotes: ['Italian Lemon','Pepperwood','Neroli'], midNotes: ['Clary Sage','Geranium','Black Pepper'], baseNotes: ['Sandalwood','Vetiver','Amber'], sillage: 85, longevity: 86, versatility: 72, rating: 4.6 },
+  v3: { seasons: ['Spring','Summer','Fall'], description: "Dylan Blue is a sophisticated, modern aquatic fougère — a blend of watery freshness, grapefruit zest and violet leaf over a backbone of musk, saffron and incense. Effortlessly masculine.", topNotes: ['Grapefruit','Fig Leaf','Aqua'], midNotes: ['Violet Leaf','Patchouli','Papyrus'], baseNotes: ['Musk','Amber','Saffron'], sillage: 79, longevity: 80, versatility: 84, rating: 4.5 },
+  v4: { seasons: ['Spring','Summer'], description: "Bright Crystal is a fresh, sensual fragrance — a precious gem of frozen waters. Pomegranate and yuzu brightness descends into a floral heart of magnolia and lotus before a gentle base of musk and amber.", topNotes: ['Pomegranate','Yuzu','Iced Accord'], midNotes: ['Magnolia','Lotus','Peony'], baseNotes: ['Musk','Amber','Mahogany'], sillage: 70, longevity: 74, versatility: 76, rating: 4.4 },
+  v5: { seasons: ['Fall','Winter'], description: "Crystal Noir is mysterious, sensual femininity at its darkest. Gardenia, coconut water and amber envelop the senses with a warm, luxurious aura that commands attention in any room.", topNotes: ['Ginger','Cardamom','Pepper'], midNotes: ['Peony','Gardenia','Coconut Water'], baseNotes: ['Amber','Sandalwood','Musk'], sillage: 81, longevity: 83, versatility: 68, rating: 4.5 },
+  v6: { seasons: ['Fall','Winter'], description: "Eros Najim Parfum is an ultra-concentrated interpretation of Eros — intensified cool citrus notes meet dark aromatic woods and a lingering vanilla and musk base. Rare, powerful and deeply seductive.", topNotes: ['Lemon','Mandarin','Bergamot'], midNotes: ['Sage','Ambroxan','Benzyl'], baseNotes: ['Vanilla','Musk','Woody Notes'], sillage: 90, longevity: 92, versatility: 65, rating: 4.7 },
+
+  c1: { seasons: ['Spring','Summer','Fall','Winter'], description: "Aventus is the crown jewel of perfumery — a timeless, fruity-smoky masterpiece. Bold pineapple and bergamot meet birch smoke and oakmoss in a composition that exudes success, strength and confidence.", topNotes: ['Pineapple','Bergamot','Black Currant'], midNotes: ['Birch','Jasmine','Rose'], baseNotes: ['Oakmoss','Ambergris','Musk'], sillage: 88, longevity: 90, versatility: 92, rating: 4.9 },
+  c2: { seasons: ['Spring','Summer'], description: "Green Irish Tweed is a fresh, eternally youthful fougère — one of the most copied fragrances ever made. Crisp verbena and iris create a fresh, green fantasy of dewy Irish mornings that never fades.", topNotes: ['Lemon Verbena','Iris','Violet Leaves'], midNotes: ['Sandalwood','Iris'], baseNotes: ['Ambergris','Cashmeran'], sillage: 78, longevity: 82, versatility: 80, rating: 4.7 },
+  c3: { seasons: ['Spring','Summer'], description: "Silver Mountain Water transports you to glacial Alpine streams — a crisp, clear and transparent fragrance of rare beauty. Green tea and bergamot dance over a clean sandalwood and musk base.", topNotes: ['Bergamot','Mandarin','Green Tea'], midNotes: ['Neroli','Jasmine','Cassis'], baseNotes: ['Sandalwood','Musk','Galbanum'], sillage: 76, longevity: 78, versatility: 79, rating: 4.6 },
+  c4: { seasons: ['Fall','Winter'], description: "Viking is a powerful Norse tribute — pink pepper and bergamot open a lavender heart that settles into sandalwood and guaiac wood. Bold, structured and utterly masculine in the Creed tradition.", topNotes: ['Pink Pepper','Bergamot','Incense'], midNotes: ['Lavender','Cinnamon','Tonka Bean'], baseNotes: ['Sandalwood','Guaiac Wood','Musk'], sillage: 86, longevity: 88, versatility: 75, rating: 4.7 },
+  c5: { seasons: ['Spring','Summer','Fall'], description: "Himalaya is a bracing, sophisticated tribute to the world's greatest mountain range — Calabrian bergamot and exotic rose unfurl over a clean woody base of cedar, sandalwood and white musk.", topNotes: ['Bergamot','Grapefruit','Lemon'], midNotes: ['Jasmine','Rose','Violet'], baseNotes: ['Sandalwood','Cedar','White Musk'], sillage: 77, longevity: 80, versatility: 78, rating: 4.6 },
+  c6: { seasons: ['Spring','Summer'], description: "Millesime Imperial is an oceanic gem — refined, fresh and aristocratic. Sea notes and citrus open into iris and musks, creating a luminous aquatic experience that evokes a Mediterranean summer in full bloom.", topNotes: ['Sea Notes','Bergamot','Citrus'], midNotes: ['Iris','Yarrow'], baseNotes: ['White Musk','Ambergris'], sillage: 80, longevity: 83, versatility: 82, rating: 4.7 },
+
+  j1: { seasons: ['Spring','Summer'], description: "Wood Sage & Sea Salt is the scent of a sea breeze carrying the fragrance of rock sage from coastal cliffs. An escape to the sea in a bottle — clean, mineral and effortlessly cool.", topNotes: ['Sea Salt','Ambrette'], midNotes: ['Sage'], baseNotes: ['Driftwood','Amberwood'], sillage: 70, longevity: 68, versatility: 78, rating: 4.6 },
+  j2: { seasons: ['Spring','Summer'], description: "Peony & Blush Suede is a tender floral duet — the delicate softness of red peony and the gentle warmth of suede. Playful yet sophisticated, it captures the first blush of a romance beautifully.", topNotes: ['Red Apple','Pear','Peony'], midNotes: ['Jasmine','Rose'], baseNotes: ['Suede','Sandalwood','Vanilla'], sillage: 72, longevity: 75, versatility: 76, rating: 4.7 },
+  j3: { seasons: ['Spring','Summer'], description: "Lime Basil & Mandarin is a vibrant, zesty and aromatic escape — the signature scent of Jo Malone London since 1994. A zingy blend of spicy basil and crushed green leaves with warm white amber.", topNotes: ['Lime','Bergamot','Mandarin'], midNotes: ['Basil','Green Leaves'], baseNotes: ['Vetyver','Amber','White Musk'], sillage: 68, longevity: 66, versatility: 80, rating: 4.5 },
+  j4: { seasons: ['Fall'], description: "English Pear & Freesia is the essence of an English autumn — crisp pear and white freesia nestled in a bed of patchouli, rosewoods and amber. Fresh and cosy, like falling leaves.", topNotes: ['Pear','Rhubarb'], midNotes: ['Freesia','Pear Blossom'], baseNotes: ['Patchouli','Amber','Rosewoods'], sillage: 69, longevity: 72, versatility: 74, rating: 4.6 },
+  j5: { seasons: ['Fall','Winter'], description: "Myrrh & Tonka is a rich, comforting warmth — heady almond, sweet tonka bean and powdery myrrh are drawn together by a lingering base of copaiba balsam. A true winter skin scent.", topNotes: ['Lavender','Davana'], midNotes: ['Myrrh','Benzoin'], baseNotes: ['Tonka Bean','Almond','Copaiba Balsam'], sillage: 77, longevity: 80, versatility: 66, rating: 4.7 },
+  j6: { seasons: ['Fall','Winter'], description: "Velvet Rose & Oud is a lavish, opulent masterpiece — bold Turkish rose, smoky oud and raspberry accord create a scent that is as rich and complex as a piece of deep crimson velvet.", topNotes: ['Raspberry','Oud'], midNotes: ['Turkish Rose','Oud Wood'], baseNotes: ['Patchouli','Sandalwood','Musk'], sillage: 82, longevity: 84, versatility: 65, rating: 4.7 },
+
+  p1: { seasons: ['Spring','Summer','Fall'], description: "Layton is an elegant, opulent fougère inspired by the garden of the Château de Marly. Apple, lavender and geranium rest atop a warm vanilla and sandalwood base — balanced, refined and deeply luxurious.", topNotes: ['Apple','Bergamot','Violet'], midNotes: ['Lavender','Geranium','Jasmine'], baseNotes: ['Vanilla','Sandalwood','Guaiac Wood'], sillage: 87, longevity: 90, versatility: 88, rating: 4.8 },
+  p2: { seasons: ['Spring','Summer'], description: "Percival is a fresh, powdery floral of great elegance — bergamot and lemon sparkle over a rose and jasmine heart while a woody musk base provides a clean and luminous drydown. Royally refined.", topNotes: ['Bergamot','Lemon','Pink Pepper'], midNotes: ['Rose','Jasmine','Iris'], baseNotes: ['White Musk','Sandalwood','Cedar'], sillage: 79, longevity: 82, versatility: 80, rating: 4.6 },
+  p3: { seasons: ['Fall','Winter'], description: "Herod is a dark, seductive tobacco-oriental masterpiece — cinnamon, pepper and rose descend into vanilla, cypress and tonka in a composition of rare elegance that leaves an unforgettable trail.", topNotes: ['Pepper','Cinnamon','Cypress'], midNotes: ['Rose','Jasmine','Tobacco'], baseNotes: ['Tonka Bean','Vanilla','Sandalwood'], sillage: 86, longevity: 89, versatility: 72, rating: 4.7 },
+  p4: { seasons: ['Spring','Summer','Fall'], description: "Sedley is a crisp, outdoors fougère evoking a walk through a morning English garden — lavender and mint atop a cedar and musk base. Clean, green and quietly aristocratic.", topNotes: ['Bergamot','Lavender','Mint'], midNotes: ['Geranium','Violet','Rose'], baseNotes: ['Cedar','Sandalwood','Musk'], sillage: 75, longevity: 78, versatility: 82, rating: 4.5 },
+  p5: { seasons: ['Spring','Summer'], description: "Delina is the quintessential Parfums de Marly floral — a Turkish rose of rare beauty surrounded by lychee, rhubarb and peony. Warm, feminine and impossibly elegant, it evokes the splendour of Versailles.", topNotes: ['Lychee','Rhubarb','Bergamot'], midNotes: ['Turkish Rose','Peony','Violet'], baseNotes: ['Cashmeran','Musk','Sandalwood'], sillage: 83, longevity: 86, versatility: 78, rating: 4.8 },
+  p6: { seasons: ['Spring','Summer'], description: "Cassili is a bright, feminine luminosity — creamy peach and apricot blossom over a warm sandalwood and musks base. Soft, sensual and beautifully effortless, it is a scent for pure joy.", topNotes: ['Bergamot','Mandarin','Peach'], midNotes: ['Apricot Blossom','Rose','Jasmine'], baseNotes: ['Sandalwood','Vanilla','White Musk'], sillage: 78, longevity: 80, versatility: 76, rating: 4.6 },
+};
+
+const seasonIcons = { Spring:'🌸', Summer:'☀️', Fall:'🍂', Winter:'❄️' };
+
+// ══════════════════════════════════════════════════
+//  PRODUCT DETAIL — open/close/render
+// ══════════════════════════════════════════════════
+let detailProduct = null;
+let detailBrand   = null;
+let detailIdx     = null;
+let detailSelSize = null;
+let wishlist      = JSON.parse(localStorage.getItem('fragasm_wishlist') || '[]');
+
+function openDetail(brand, productId, idx) {
+  detailProduct = products[brand][idx];
+  detailBrand   = brand;
+  detailIdx     = idx;
+  detailSelSize = detailProduct.sizes[0];
+  renderDetailPage();
+  const overlay = document.getElementById('detail-overlay');
+  overlay.classList.add('open');
+  overlay.scrollTop = 0;
+  document.body.style.overflow = 'hidden';
+  // animate profile bars after a short delay
+  setTimeout(animateProfileBars, 400);
+}
+
+function closeDetail() {
+  document.getElementById('detail-overlay').classList.remove('open');
+  document.body.style.overflow = '';
+}
+
+function renderDetailPage() {
+  const p   = detailProduct;
+  const det = productDetails[p.id] || {};
+  const price = getPrice(p, detailSelSize);
+  const isWished = wishlist.includes(p.id);
+  const reviews = getReviews(p.id);
+  const avgRating = reviews.length
+    ? (reviews.reduce((s,r) => s + r.stars, 0) / reviews.length).toFixed(1)
+    : det.rating || 4.5;
+
+  document.getElementById('detail-body').innerHTML = `
+    <!-- HERO -->
+    <div class="detail-hero">
+      <!-- IMAGE COL -->
+      <div class="detail-img-col">
+        <div class="detail-img-main">
+          <img src="${p.img}" alt="${p.name}" onerror="this.src='data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 width=%22400%22 height=%22400%22><rect fill=%22%231a1816%22 width=%22400%22 height=%22400%22/><text x=%2250%25%22 y=%2250%25%22 text-anchor=%22middle%22 fill=%22%23c9a84c%22 font-size=%2260%22>${p.emoji}</text></svg>'">
+          <div class="detail-img-badge">${brandNames[detailBrand]}</div>
+        </div>
+        <div class="detail-season-tags">
+          ${['Spring','Summer','Fall','Winter'].map(s => `
+            <div class="season-tag ${(det.seasons||[]).includes(s) ? 'active' : ''}">
+              ${seasonIcons[s]} ${s}
+            </div>
+          `).join('')}
+        </div>
+      </div>
+
+      <!-- INFO COL -->
+      <div class="detail-info-col">
+        <div class="detail-breadcrumb">
+          Collection <span>›</span> ${brandNames[detailBrand]} <span>›</span> ${p.name}
+        </div>
+        <h1 class="detail-title">${p.name}</h1>
+        <div class="detail-type-line">${p.type} · ${brandNames[detailBrand]}</div>
+
+        <div class="detail-rating-row">
+          <div class="stars">${renderStars(avgRating)}</div>
+          <span class="rating-count">${avgRating} · ${reviews.length} review${reviews.length !== 1 ? 's' : ''}</span>
+        </div>
+
+        <p class="detail-desc">${det.description || 'A luxurious, meticulously crafted fragrance from one of the world\'s premier fragrance houses.'}</p>
+
+        <!-- SIZE SELECTOR -->
+        <div class="detail-size-section">
+          <div class="detail-section-label">Select Size</div>
+          <div class="detail-sizes">
+            ${p.sizes.map(s => `
+              <button class="detail-size-opt ${s === detailSelSize ? 'active' : ''}"
+                onclick="selectDetailSize('${s}')">
+                ${s}
+                <span class="detail-size-price">${formatPrice(getPrice(p, s))}</span>
+              </button>
+            `).join('')}
+          </div>
+        </div>
+
+        <div class="detail-price-display" id="detail-price">
+          <sup>₹</sup>${getPrice(p, detailSelSize).toLocaleString('en-IN')}
+        </div>
+
+        <div class="detail-actions">
+          <button class="detail-add-btn" onclick="addToCartFromDetail()">Add to Cart</button>
+          <button class="detail-wishlist-btn ${isWished ? 'wishlisted' : ''}" id="wish-btn"
+            onclick="toggleWishlist('${p.id}')">
+            ${isWished ? '♥' : '♡'}
+          </button>
+        </div>
+
+        <!-- NOTES PYRAMID -->
+        <div class="notes-section">
+          <div class="detail-section-label">Fragrance Notes</div>
+          <div class="notes-pyramid">
+            <div class="notes-col">
+              <div class="notes-col-title">Top Notes</div>
+              ${(det.topNotes||['Bergamot','Citrus']).map(n => `<div class="note-pill">${n}</div>`).join('')}
+            </div>
+            <div class="notes-col">
+              <div class="notes-col-title">Heart Notes</div>
+              ${(det.midNotes||['Rose','Jasmine']).map(n => `<div class="note-pill">${n}</div>`).join('')}
+            </div>
+            <div class="notes-col">
+              <div class="notes-col-title">Base Notes</div>
+              ${(det.baseNotes||['Musk','Sandalwood']).map(n => `<div class="note-pill">${n}</div>`).join('')}
+            </div>
+          </div>
+        </div>
+
+        <!-- PERFORMANCE BARS -->
+        <div class="profile-section">
+          <div class="detail-section-label">Fragrance Profile</div>
+          ${[
+            ['Sillage', det.sillage||75],
+            ['Longevity', det.longevity||80],
+            ['Versatility', det.versatility||75],
+          ].map(([label, val]) => `
+            <div class="profile-bar-row">
+              <span class="profile-bar-label">${label}</span>
+              <div class="profile-bar-track">
+                <div class="profile-bar-fill" data-val="${val}" style="width:0%"></div>
+              </div>
+              <span class="profile-bar-val">${val}%</span>
+            </div>
+          `).join('')}
+        </div>
+
+      </div>
+    </div>
+
+    <!-- REVIEWS SECTION -->
+    <div class="reviews-section" id="reviews-section">
+      <div class="reviews-header">
+        <div>
+          <div class="reviews-avg">${avgRating}</div>
+          <div class="stars" style="margin:6px 0">${renderStars(avgRating)}</div>
+          <div class="reviews-count">${reviews.length} review${reviews.length !== 1 ? 's' : ''}</div>
+        </div>
+        <button class="write-review-btn" onclick="toggleReviewForm()">Write a Review</button>
+      </div>
+
+      <!-- WRITE REVIEW FORM -->
+      <div class="review-form-box" id="review-form-box">
+        <div class="profile-section-title" style="margin-bottom:16px">Share Your Experience</div>
+        <div class="detail-section-label">Your Rating</div>
+        <div class="star-picker" id="star-picker">
+          ${[1,2,3,4,5].map(i => `<span class="star-pick" data-val="${i}" onclick="setReviewStars(${i})">★</span>`).join('')}
+        </div>
+        <div class="form-row" style="margin-bottom:16px">
+          <div class="form-group">
+            <label class="form-label">Your Name</label>
+            <input class="form-input" id="rev-name" type="text" placeholder="Arjun S.">
+          </div>
+          <div class="form-group">
+            <label class="form-label">Review Title</label>
+            <input class="form-input" id="rev-title" type="text" placeholder="My signature scent!">
+          </div>
+        </div>
+        <div class="form-group" style="margin-bottom:20px">
+          <label class="form-label">Your Review</label>
+          <textarea class="form-input" id="rev-text" rows="4" style="resize:vertical;min-height:100px" placeholder="Tell others about your experience with this fragrance..."></textarea>
+        </div>
+        <div style="margin-bottom:16px">
+          <div class="detail-section-label" style="margin-bottom:8px">Tags (optional)</div>
+          <div style="display:flex;flex-wrap:wrap;gap:8px" id="tag-picker">
+            ${['Long Lasting','Office Wear','Date Night','Casual','Compliment Getter','Unique','Great Value'].map(t => `
+              <span class="review-tag" style="cursor:pointer" onclick="this.classList.toggle('active');this.style.color=this.classList.contains('active')?'var(--gold)':'';this.style.borderColor=this.classList.contains('active')?'var(--gold)':'';">${t}</span>
+            `).join('')}
+          </div>
+        </div>
+        <button class="login-submit" style="max-width:200px" onclick="submitReview('${p.id}')">Post Review</button>
+      </div>
+
+      <!-- REVIEWS LIST -->
+      <div id="reviews-list">
+        ${renderReviewCards(reviews)}
+      </div>
+    </div>
+  `;
+}
+
+function renderStars(rating) {
+  const full = Math.floor(rating);
+  const half = rating - full >= 0.5;
+  return [1,2,3,4,5].map(i =>
+    `<span class="star ${i <= full ? '' : (i === full+1 && half ? 'half' : 'empty')}">★</span>`
+  ).join('');
+}
+
+function renderReviewCards(reviews) {
+  if (!reviews.length) return `
+    <div class="no-reviews">
+      <div class="no-reviews-icon">✍️</div>
+      <div style="font-family:'Cormorant Garamond',serif;font-size:1.3rem;color:var(--cream);margin-bottom:8px">No reviews yet</div>
+      <div style="font-size:0.65rem;letter-spacing:0.15em;text-transform:uppercase;color:var(--text-muted)">Be the first to share your experience</div>
+    </div>`;
+  return reviews.map(r => `
+    <div class="review-card">
+      <div class="review-card-head">
+        <div>
+          <div class="reviewer-name">${r.name}</div>
+          <div class="stars" style="margin-top:4px">${renderStars(r.stars)}</div>
+        </div>
+        <div class="review-date">${r.date}</div>
+      </div>
+      <div class="review-title">${r.title}</div>
+      <div class="review-text">${r.text}</div>
+      ${r.tags && r.tags.length ? `<div>${r.tags.map(t => `<span class="review-tag">${t}</span>`).join('')}</div>` : ''}
+      <div class="review-verified">✓ Verified Purchase</div>
+    </div>
+  `).join('');
+}
+
+function animateProfileBars() {
+  document.querySelectorAll('.profile-bar-fill').forEach(bar => {
+    bar.style.width = bar.dataset.val + '%';
+  });
+}
+
+function selectDetailSize(size) {
+  detailSelSize = size;
+  // update active button
+  document.querySelectorAll('.detail-size-opt').forEach(btn => {
+    btn.classList.toggle('active', btn.textContent.trim().startsWith(size));
+  });
+  const price = getPrice(detailProduct, size);
+  const priceEl = document.getElementById('detail-price');
+  if (priceEl) priceEl.innerHTML = `<sup>₹</sup>${price.toLocaleString('en-IN')}`;
+}
+
+function addToCartFromDetail() {
+  if (!detailProduct) return;
+
+  const price = getPrice(detailProduct, detailSelSize);
+
+  const existing = cart.find(i => i.id === detailProduct.id && i.size === detailSelSize);
+
+  if (existing) {
+    existing.qty++;
+  } else {
+    cart.push({
+      ...detailProduct,
+      price,
+      brand: detailBrand,
+      brandName: brandNames[detailBrand],
+      size: detailSelSize,
+      qty: 1
+    });
+  }
+
+  saveCart();
+  updateCartUI();
+
+  // FIX: update detail cart badge
+  document.getElementById('detail-cart-count').textContent =
+    cart.reduce((s,i)=>s+i.qty,0);
+
+  showToast(`${detailProduct.name} (${detailSelSize}) added to cart`);
+}
+
+function toggleWishlist(id) {
+  const i = wishlist.indexOf(id);
+  if (i === -1) { wishlist.push(id); showToast('Added to wishlist ♥'); }
+  else { wishlist.splice(i, 1); showToast('Removed from wishlist'); }
+  localStorage.setItem('fragasm_wishlist', JSON.stringify(wishlist));
+  const btn = document.getElementById('wish-btn');
+  if (btn) { btn.classList.toggle('wishlisted', wishlist.includes(id)); btn.textContent = wishlist.includes(id) ? '♥' : '♡'; }
+}
+
+// ─── REVIEWS ───
+let reviewStars = 0;
+
+function getReviews(productId) {
+  return JSON.parse(localStorage.getItem('fragasm_reviews_' + productId) || '[]');
+}
+
+function toggleReviewForm() {
+  const box = document.getElementById('review-form-box');
+  box.classList.toggle('open');
+}
+
+function setReviewStars(val) {
+  reviewStars = val;
+  document.querySelectorAll('.star-pick').forEach((s, i) => {
+    s.classList.toggle('lit', i < val);
+  });
+}
+
+function submitReview(productId) {
+  const name  = document.getElementById('rev-name')?.value.trim();
+  const title = document.getElementById('rev-title')?.value.trim();
+  const text  = document.getElementById('rev-text')?.value.trim();
+  if (!name || !text || reviewStars === 0) {
+    showToast('Please fill in your name, review and rating'); return;
+  }
+  const tags = [...document.querySelectorAll('#tag-picker .review-tag.active')].map(t => t.textContent.trim());
+  const reviews = getReviews(productId);
+  reviews.unshift({
+    name, title: title || 'My Review', text, stars: reviewStars, tags,
+    date: new Date().toLocaleDateString('en-IN', { day:'numeric', month:'short', year:'numeric' })
+  });
+  localStorage.setItem('fragasm_reviews_' + productId, JSON.stringify(reviews));
+  document.getElementById('review-form-box').classList.remove('open');
+  // refresh reviews list + rating
+  document.getElementById('reviews-list').innerHTML = renderReviewCards(reviews);
+  const avg = (reviews.reduce((s,r) => s+r.stars,0)/reviews.length).toFixed(1);
+  document.querySelector('.reviews-avg').textContent = avg;
+  document.querySelector('.reviews-count').textContent = `${reviews.length} review${reviews.length !== 1 ? 's' : ''}`;
+  showToast('Thank you for your review!');
+  reviewStars = 0;
+}
+
+// sync detail cart badge
+function updateCartUI() {
+  const total = cart.reduce((s, i) => s + i.price * i.qty, 0);
+  const count = cart.reduce((s, i) => s + i.qty, 0);
+
+  // cart badge
+  const badge = document.getElementById('cart-count');
+  badge.textContent = count;
+
+  // total
+  document.getElementById('cart-total').textContent = formatPrice(total);
+
+  // detail page badge
+  const dc = document.getElementById('detail-cart-count');
+  if (dc) dc.textContent = count;
+
+  const body = document.getElementById('cart-body');
+
+  // EMPTY CART
+  if (cart.length === 0) {
+    body.innerHTML = `
+      <div class="cart-empty">
+        <div class="cart-empty-icon">🧴</div>
+        <div class="cart-empty-text">Your cart is empty</div>
+        <div class="cart-empty-sub">Add a fragrance to begin</div>
+      </div>
+    `;
+    return;
+  }
+
+  //  FILLED CART
+  body.innerHTML = cart.map(item => `
+    <div class="cart-item">
+      <div class="cart-item-img">
+        <img src="${item.img}" 
+             style="width:100%;height:100%;object-fit:cover;"
+             onerror="this.style.display='none';this.parentElement.textContent='${item.emoji}'">
+      </div>
+
+      <div class="cart-item-info">
+        <div class="cart-item-brand">${item.brandName}</div>
+        <div class="cart-item-name">${item.name}</div>
+        <div class="cart-item-size">${item.type} · ${item.size}</div>
+
+        <div class="cart-item-row">
+          <button class="qty-btn" onclick="changeQty('${item.id}','${item.size}',-1)">−</button>
+          <span class="qty-val">${item.qty}</span>
+          <button class="qty-btn" onclick="changeQty('${item.id}','${item.size}',1)">+</button>
+
+          <span class="cart-item-price">${formatPrice(item.price * item.qty)}</span>
+
+          <button class="remove-btn" onclick="removeFromCart('${item.id}','${item.size}')">
+            Remove
+          </button>
+        </div>
+      </div>
+    </div>
+  `).join('');
+}
+
+renderProducts();
+updateCartUI();
+</script>
+</body>
+</html>
